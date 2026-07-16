@@ -1,0 +1,14 @@
+{
+    "name": "k-15-exhibitron",
+    "version": "1.0.0",
+    "description": "",
+    "license": "UNLICENSED",
+    "author": "",
+    "type": "commonjs",
+    "main": "index.js",
+    "scripts": {},
+    "dependencies": {
+        "crypto": "^1.0.1",
+        "prettier": "^3.8.4"
+    }
+}
