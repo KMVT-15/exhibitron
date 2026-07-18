@@ -1,13 +1,52 @@
+import { useRef } from "react";
 import Button from "./Button";
 import Fader from "./Fader";
 import Knob from "./Knob";
 import Switch from "./Switch";
-
-function onChange(uid, value) {
-    console.log(uid, value);
-}
+import { useEffect } from "react";
 
 export default function Desk() {
+    const wsRef = useRef(null);
+
+    useEffect(() => {
+        let cancelled = false;
+        let reconnectTimeout;
+
+        function connect() {
+            const ws = new WebSocket("ws://localhost:8080");
+            wsRef.current = ws;
+
+            ws.onclose = () => {
+                if (!cancelled) {
+                    reconnectTimeout = setTimeout(connect, 1000);
+                }
+            };
+        }
+
+        connect();
+
+        return () => {
+            cancelled = true;
+            clearTimeout(reconnectTimeout);
+            wsRef.current.close();
+        };
+    }, []);
+
+    function onChange(uid, value) {
+        console.log(uid, value);
+
+        if (wsRef.current && wsRef.current.readyState == WebSocket.OPEN) {
+            wsRef.current.send(
+                JSON.stringify({
+                    sender: "unique sender id",
+                    params: {
+                        [uid]: value,
+                    },
+                }),
+            );
+        }
+    }
+
     return (
         <div className="relative w-full h-full">
             {/* prettier-ignore */}
@@ -73,14 +112,14 @@ export default function Desk() {
             <Button x={1509} y={642} angle={0} style="square" size={20} uid="B59" onChange={onChange} />
             <Button x={1544} y={597} angle={0} style="square" size={20} uid="B60" onChange={onChange} />
             <Button x={1564} y={539} angle={0} style="square" size={20} uid="B61" onChange={onChange} />
-            <Knob x={82} y={478} size={100} uid="P1" onChange={onChange} />
+            <Knob x={82} y={478} size={100} uid="P1" defaultValue={50} onChange={onChange} />
             <Knob x={186} y={442} size={20} uid="P2" onChange={onChange} />
             <Knob x={251} y={388} size={20} uid="P3" onChange={onChange} />
             <Knob x={316} y={443} size={20} uid="P4" onChange={onChange} />
             <Knob x={281} y={341} size={20} uid="P5" onChange={onChange} />
             <Knob x={364} y={270} size={20} uid="P6" onChange={onChange} />
             <Knob x={358} y={172} size={35} uid="P7" onChange={onChange} />
-            <Knob x={450} y={123} size={100} uid="P8" onChange={onChange} />
+            <Knob x={450} y={123} size={100} uid="P8" defaultValue={50} onChange={onChange} />
             <Knob x={454} y={244} size={20} uid="P9" onChange={onChange} />
             <Knob x={510} y={242} size={20} uid="P10" onChange={onChange} />
             <Knob x={552} y={215} size={20} uid="P11" onChange={onChange} />
@@ -122,14 +161,14 @@ export default function Desk() {
             <Switch x={1563} y={426} angle={90} uid="S15" onChange={onChange} />
             <Switch x={1509} y={468} angle={90} uid="S16" onChange={onChange} />
             <Switch x={1563} y={468} angle={90} uid="S17" onChange={onChange} />
-            <Fader x={150} y={430} angle={-90} style="lever" uid="L1" onChange={onChange} />
-            <Fader x={230} y={360} angle={-90} style="lever" uid="L2" onChange={onChange} />
-            <Fader x={300} y={290} angle={-90} style="lever" uid="L3" onChange={onChange} />
+            <Fader x={150} y={430} angle={-90} style="lever" uid="L1" defaultValue={100} onChange={onChange} />
+            <Fader x={230} y={360} angle={-90} style="lever" uid="L2" defaultValue={100} onChange={onChange} />
+            <Fader x={300} y={290} angle={-90} style="lever" uid="L3" defaultValue={100} onChange={onChange} />
             <Fader x={150+1150} y={430+200} angle={-90} style="lever" uid="L4" onChange={onChange} />
             <Fader x={230+1150} y={360+200} angle={-90} style="lever" uid="L5" onChange={onChange} />
             <Fader x={300+1150} y={290+200} angle={-90} style="lever" uid="L6" onChange={onChange} />
-            <Fader x={170} y={620} angle={-45} uid="F1" onChange={onChange} />
-            <Fader x={380} y={630} angle={225} uid="F2" onChange={onChange} />
+            <Fader x={170} y={620} angle={-45} uid="F1" defaultValue={50} onChange={onChange} />
+            <Fader x={380} y={630} angle={225} uid="F2" defaultValue={50} onChange={onChange} />
             <Fader x={350} y={360} angle={-45} uid="F3" onChange={onChange} />
             <Fader x={686} y={590} uid="F4" onChange={onChange} />
             <Fader x={805} y={570} angle={-90} uid="F5" onChange={onChange} />
@@ -139,7 +178,6 @@ export default function Desk() {
             <Fader x={660+(75*2)} y={230} angle={-90} uid="F9" onChange={onChange} />
             <Fader x={660+(75*3)} y={230} angle={-90} uid="F10" onChange={onChange} />
             <Fader x={660+(75*4)} y={230} angle={-90} uid="F11" onChange={onChange} />
-
             <Fader x={1080} y={620} angle={20} uid="F12" onChange={onChange} />
             <Fader x={1080+(10*1)} y={620+(-34*1)} angle={20} uid="F13" onChange={onChange} />
             <Fader x={1080+(10*2)} y={620+(-34*2)} angle={20} uid="F14" onChange={onChange} />

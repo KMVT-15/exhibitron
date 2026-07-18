@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import { useEffect } from "react";
 
 export default function Fader({
     angle = 0,
@@ -6,15 +7,20 @@ export default function Fader({
     y = 0,
     width = 100,
     style = "fader",
+    defaultValue = 0,
     uid,
     onChange,
 }) {
+    useEffect(() => {
+        onChange(uid, defaultValue);
+    }, []);
+
     return (
         <input
             type="range"
             min="0"
             max="100"
-            defaultValue="0"
+            defaultValue={defaultValue}
             className={clsx(
                 "absolute origin-top-left",
                 style == "fader" && "accent-amber-500",

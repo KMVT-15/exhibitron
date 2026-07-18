@@ -3,11 +3,22 @@ import { useState, useRef, useEffect } from "react";
 const SCROLL_SPEED = 2;
 const DRAG_SPEED = 1;
 
-export default function Knob({ size = 15, x = 0, y = 0, uid, onChange }) {
-    const [angle, setAngle] = useState(0);
+export default function Knob({
+    size = 15,
+    x = 0,
+    y = 0,
+    uid,
+    onChange,
+    defaultValue = 0,
+}) {
+    const [angle, setAngle] = useState((defaultValue / 100) * 360);
     const ref = useRef(null);
     const dragging = useRef(false);
     const lastY = useRef(0);
+
+    useEffect(() => {
+        onChange(uid, defaultValue);
+    }, []);
 
     useEffect(() => {
         const el = ref.current;
