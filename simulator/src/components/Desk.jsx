@@ -51,6 +51,11 @@ export default function Desk() {
         <div className="relative w-full h-full">
             {/* prettier-ignore */}
             <>
+            <Button x={950} y={480} style="square" size={25} uid="J2" onChange={onChange} />
+            <Button x={950} y={520} style="square" size={25} uid="J4" onChange={onChange} />
+            <Button x={915} y={500} style="square" size={25} uid="J1" onChange={onChange} />
+            <Button x={985} y={500} style="square" size={25} uid="J3" onChange={onChange} />
+
             <Button x={195} y={635} angle={45} style="square" size={50} uid="B1" onChange={onChange} />
             <Button x={255} y={574} angle={45} style="square" size={50} uid="B2" onChange={onChange} />
             <Button x={314} y={635} angle={45} style="square" size={50} uid="B3" onChange={onChange} />

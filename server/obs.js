@@ -77,8 +77,8 @@ export class OBS {
                 requestType: "GetSourceFilter",
                 requestId: "",
                 requestData: {
-                    sourceName: "Foreground",
-                    filterName: "Image Mask",
+                    sourceName: "BLEND",
+                    filterName: "Invert",
                 },
             },
         });
@@ -103,6 +103,9 @@ export class OBS {
         this.requestItemId("Background", "Camera 2");
         this.requestItemId("Background", "Camera 3");
         this.requestItemId("Background", "Camera 4");
+        this.requestItemId("Background", "Camera 5");
+        this.requestItemId("Background", "Camera 6");
+        this.requestItemId("Background", "Camera 7");
         this.requestItemId("BLEND", "Foreground");
     }
 
@@ -117,6 +120,8 @@ export class OBS {
         }
 
         switch (d.requestType) {
+            case "SetSceneItemTransform":
+                break;
             case "GetSourceFilterList":
                 console.log(d.responseData.filters);
                 break;

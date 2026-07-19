@@ -2,6 +2,7 @@ const DEFAULTS = {
     L1: 100,
     L2: 100,
     L3: 100,
+    P21: 23,
 };
 
 export class Board {
