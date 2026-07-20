@@ -4,7 +4,8 @@ import { WebSocketServer } from "ws";
 import { actions } from "./actions.js";
 
 var wss = new WebSocketServer({ port: 8080 });
-var obs = new OBS("ws://localhost:4455", "lLiFbK5a3EV2IvjH");
+// var obs = new OBS("ws://localhost:4455", "lLiFbK5a3EV2IvjH");
+var obs = new OBS("ws://10.10.3.50:4455", "password");
 var board = new Board();
 
 board.onChange((params) => {
