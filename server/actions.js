@@ -20,6 +20,17 @@ function on_press(f) {
     };
 }
 
+function toggle(f) {
+    var state = false;
+
+    return (o, v, b) => {
+        if (v == 1) {
+            state = !state;
+            f(o, state, b);
+        }
+    };
+}
+
 function on_hold(f, interval = 100) {
     var timer = null;
 
@@ -365,7 +376,7 @@ export const actions = {
     B8: TODO,
     B9: TODO,
     B10: TODO,
-    B11: TODO,
+    B11: toggle(console.log),
     B12: TODO,
     B13: TODO,
     B14: TODO,
