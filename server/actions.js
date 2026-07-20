@@ -88,7 +88,7 @@ function change_fg_posn(dx, dy) {
 function set_fg_mask(path) {
     return (o) => {
         o.setFilterSettings("Foreground", "Image Mask", {
-            image_path: `/Users/william/Desktop/K-15 Exhibitron/assets/masks/${path}.png`,
+            image_path: `/Users/counter/exhibitron/assets/masks/${path}.png`,
         });
     };
 }
