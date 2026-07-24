@@ -77,8 +77,8 @@ export class OBS {
                 requestType: "GetSourceFilter",
                 requestId: "",
                 requestData: {
-                    sourceName: "BLEND",
-                    filterName: "Invert",
+                    sourceName: "Camera 8",
+                    filterName: "Fill Color",
                 },
             },
         });
@@ -95,6 +95,17 @@ export class OBS {
             },
         });
 
+        this.send({
+            op: 6,
+            d: {
+                requestType: "GetInputSettings",
+                requestId: "",
+                requestData: {
+                    inputName: "Camera 6",
+                },
+            },
+        });
+
         this.requestItemId("Foreground", "Camera 1");
         this.requestItemId("Foreground", "Camera 2");
         this.requestItemId("Foreground", "Camera 3");
@@ -106,6 +117,15 @@ export class OBS {
         this.requestItemId("Background", "Camera 5");
         this.requestItemId("Background", "Camera 6");
         this.requestItemId("Background", "Camera 7");
+        this.requestItemId("Background", "Camera 8");
+        this.requestItemId("Pre-FX Overlays", "Overlay 1");
+        this.requestItemId("Pre-FX Overlays", "Overlay 2");
+        this.requestItemId("Pre-FX Overlays", "Overlay 3");
+        this.requestItemId("Pre-FX Overlays", "Overlay 4");
+        this.requestItemId("Pre-FX Overlays", "Overlay 5");
+        this.requestItemId("Pre-FX Overlays", "Overlay 6");
+        this.requestItemId("Pre-FX Overlays", "Overlay 7");
+        this.requestItemId("Pre-FX Overlays", "Overlay 8");
         this.requestItemId("BLEND", "Foreground");
     }
 
@@ -170,6 +190,21 @@ export class OBS {
         });
     }
 
+    setFilterEnabled(sourceName, filterName, filterEnabled) {
+        this.send({
+            op: 6,
+            d: {
+                requestType: "SetSourceFilterEnabled",
+                requestId: "",
+                requestData: {
+                    sourceName,
+                    filterName,
+                    filterEnabled,
+                },
+            },
+        });
+    }
+
     setVisibility(sceneName, itemName, visible) {
         var sceneItemId =
             this.known_items[encode_scene_item(sceneName, itemName)];
@@ -201,6 +236,20 @@ export class OBS {
                     sceneName,
                     sceneItemId,
                     sceneItemTransform: transformData,
+                },
+            },
+        });
+    }
+
+    setInputSettings(inputName, inputSettings) {
+        this.send({
+            op: 6,
+            d: {
+                requestType: "SetInputSettings",
+                requestId: "",
+                requestData: {
+                    inputName,
+                    inputSettings,
                 },
             },
         });

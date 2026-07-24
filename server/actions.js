@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+
 function TODO(o, v, b) {}
 
 function map_range(v, b0, b1, b2, b3) {
@@ -10,6 +13,32 @@ function map(v, b0, b1) {
 
 function rgba_to_decimal(r, g, b, a = 255) {
     return ((a << 24) | (b << 16) | (g << 8) | r) >>> 0;
+}
+
+function hsl_to_rgb(h, s, l) {
+    let r, g, b;
+    h /= 360;
+
+    if (s === 0) {
+        r = g = b = l;
+    } else {
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        const f = (t) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
+        };
+
+        r = f(h + 1 / 3);
+        g = f(h);
+        b = f(h - 1 / 3);
+    }
+
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
 function on_press(f) {
@@ -46,8 +75,8 @@ function on_hold(f, interval = 100) {
 }
 
 function set_cam(scene, cam) {
-    return (o, v, b) => {
-        for (var i = 1; i <= 7; i++) {
+    return (o) => {
+        for (var i = 1; i <= 6; i++) {
             if (i == cam) {
                 o.setVisibility(scene, `Camera ${i}`, true);
             } else {
@@ -57,6 +86,39 @@ function set_cam(scene, cam) {
     };
 }
 
+const bg_img_dir = "../assets/backgrounds";
+const bg_img_list = fs.readdirSync(bg_img_dir).map((f) => path.parse(f).name);
+var bg_img_spinner_running = false;
+
+function set_random_bg(o) {
+    if (bg_img_spinner_running) return;
+    bg_img_spinner_running = true;
+
+    const steps = 40;
+    const final_img =
+        bg_img_list[Math.floor(Math.random() * bg_img_list.length)];
+
+    let i = 0;
+    function tick() {
+        const img =
+            i === steps - 1
+                ? final_img
+                : bg_img_list[Math.floor(Math.random() * bg_img_list.length)];
+
+        console.log(img);
+        set_bg_img(img)(o);
+
+        i++;
+        if (i < steps) {
+            const delay = 40 + Math.pow(i / steps, 3) * 400;
+            setTimeout(tick, delay);
+        } else {
+            bg_img_spinner_running = false;
+        }
+    }
+
+    tick();
+}
 var fg_rotation = 0;
 var fg_posn_x = 1920 / 2;
 var fg_posn_y = 1080 / 2;
@@ -112,6 +174,21 @@ function set_mosaic(divs) {
     };
 }
 
+function set_pfxo_visibility(index) {
+    return (o, v) => {
+        o.setVisibility("Pre-FX Overlays", `Overlay ${index}`, v == 1);
+    };
+}
+
+function set_bg_img(path) {
+    return (o, v) => {
+        set_cam("Background", 5)(o);
+        o.setInputSettings("Camera 5", {
+            file: `/Users/counter/exhibitron/assets/backgrounds/${path}.jpg`,
+        });
+    };
+}
+
 function set_hue(o, v) {
     o.setFilterSettings("BLEND", "Color Correction", {
         hue_shift: map(v, -180, 180),
@@ -137,6 +214,12 @@ function set_rgb(o, v, b) {
 
     o.setFilterSettings("BLEND", "Color Correction", {
         color_multiply: rgba_to_decimal(r, g, b),
+    });
+}
+
+function set_contrast(o, v) {
+    o.setFilterSettings("BLEND", "Color Correction", {
+        contrast: map(v, -8, 8),
     });
 }
 
@@ -183,6 +266,12 @@ function set_fg_blend_crt(o, v) {
     o.setFilterSettings("Foreground", "CRT", {
         strength: map(v, 0, 400),
         feathering: map(v, 0, 200),
+    });
+}
+
+function set_pfxo_blend_opacity(o, v) {
+    o.setFilterSettings("Pre-FX Overlays", "Color Correction", {
+        opacity: map(v, 1, 0),
     });
 }
 
@@ -263,24 +352,19 @@ function set_bulge(o, v) {
     });
 }
 
-function set_bg_pixelate_x(o, v) {
+function set_bg_pixelate(o, v) {
     var Target_Width = 1920;
-
-    if (map(v, 0, 100) > 5) {
-        Target_Width = Math.pow(100, (map(v, 100, 1) - 1) / 99);
-    }
-
-    o.setFilterSettings("Background", "Pixelate", { Target_Width });
-}
-
-function set_bg_pixelate_y(o, v) {
     var Target_Height = 1080;
 
     if (map(v, 0, 100) > 5) {
-        Target_Height = Math.pow(100, (map(v, 100, 1) - 1) / 99);
+        Target_Width = Math.pow(100, (map(v, 100, 1) - 1) / 99);
+        Target_Height = Target_Width;
     }
 
-    o.setFilterSettings("Background", "Pixelate", { Target_Height });
+    o.setFilterSettings("Background", "Pixelate", {
+        Target_Height,
+        Target_Width,
+    });
 }
 
 function set_fg_pixelate(o, v) {
@@ -310,6 +394,43 @@ function set_frosted_glass(o, v) {
     });
 }
 
+function set_bg_solid_color(o, v) {
+    set_cam("Background", 6)(o);
+    o.setFilterSettings("Camera 6", "Fill Color", {
+        Fill_Color: rgba_to_decimal(...hsl_to_rgb(map(v, 0, 360), 1, 0.5)),
+    });
+}
+
+function set_ascii(o, v) {
+    o.setFilterEnabled("BLEND", "ASCII", v == 1);
+}
+
+function set_cartoon(o, v) {
+    o.setFilterEnabled("BLEND", "Cartoon", v == 1);
+}
+
+function set_rain(o, v) {
+    o.setFilterEnabled("BLEND", "Rain", v == 1);
+}
+
+function set_matrix(o, v) {
+    o.setFilterEnabled("BLEND", "Matrix", v == 1);
+}
+
+function set_fire(o, v) {
+    o.setFilterEnabled("BLEND", "Fire", v == 1);
+}
+
+function set_matrix2(o, v) {
+    o.setFilterEnabled("BLEND", "Matrix 2", v == 1);
+}
+
+function set_vhs(o, v) {
+    o.setFilterEnabled("BLEND", "VHS", v == 1);
+}
+
+function print() {}
+
 export const actions = {
     P1: set_hue,
     P2: set_bg_gamma,
@@ -326,7 +447,7 @@ export const actions = {
     P13: TODO,
     P14: TODO,
     P15: TODO,
-    P16: TODO,
+    P16: set_invert,
     P17: TODO,
     P18: TODO,
     P19: TODO,
@@ -334,8 +455,8 @@ export const actions = {
     P21: set_fg_zoom,
     P22: TODO,
     P23: TODO,
-    P24: TODO,
-    P25: TODO,
+    P24: set_bg_blur,
+    P25: set_bg_pixelate,
     P26: TODO,
     P27: TODO,
     P28: TODO,
@@ -350,12 +471,12 @@ export const actions = {
     L5: set_bulge,
     L6: TODO,
 
-    F1: set_bg_pixelate_x,
-    F2: set_bg_pixelate_y,
-    F3: set_invert,
+    F1: set_contrast,
+    F2: TODO,
+    F3: set_pfxo_blend_opacity,
     F4: set_fg_zoom,
     F5: set_fg_zoom,
-    F6: set_bg_blur,
+    F6: set_bg_solid_color,
     F7: set_fg_blend_opacity,
     F8: set_fg_blend_circle,
     F9: set_fg_blend_crt,
@@ -376,11 +497,11 @@ export const actions = {
     B8: TODO,
     B9: TODO,
     B10: TODO,
-    B11: toggle(console.log),
-    B12: TODO,
-    B13: TODO,
-    B14: TODO,
-    B15: TODO,
+    B11: set_matrix2,
+    B12: set_rain,
+    B13: set_vhs,
+    B14: set_matrix,
+    B15: set_fire,
     B16: TODO,
     B17: TODO,
     B18: TODO,
@@ -389,16 +510,16 @@ export const actions = {
     B21: set_fg_mask("heart"),
     B22: set_fg_mask("pacman_3"),
     B23: TODO,
-    B24: TODO,
-    B25: on_press(set_cam("Background", 5)),
-    B26: on_press(set_cam("Background", 6)),
-    B27: on_press(set_cam("Background", 7)),
+    B24: on_press(set_random_bg),
+    B25: on_press(set_bg_img("Subway Car")),
+    B26: on_press(set_bg_img("Sunset Beach")),
+    B27: on_press(set_bg_img("Theatre")),
     B28: on_press(change_fg_rotation(10)),
     B29: on_press(change_fg_rotation(1)),
     B30: on_press(reset_fg_translation),
     B31: on_press(change_fg_rotation(-1)),
     B32: on_press(change_fg_rotation(-10)),
-    B33: TODO,
+    B33: on_press(print),
     B34: on_press(set_cam("Background", 1)),
     B35: on_press(set_cam("Background", 2)),
     B36: on_press(set_cam("Background", 3)),
@@ -417,8 +538,8 @@ export const actions = {
     B49: TODO,
     B50: TODO,
     B51: TODO,
-    B52: TODO,
-    B53: TODO,
+    B52: toggle(set_ascii),
+    B53: toggle(set_cartoon),
     B54: set_mosaic(1),
     B55: set_mosaic(2),
     B56: set_mosaic(3),
@@ -428,14 +549,14 @@ export const actions = {
     B60: set_mosaic(7),
     B61: set_mosaic(8),
 
-    S1: TODO,
-    S2: TODO,
-    S3: TODO,
-    S4: TODO,
-    S5: TODO,
-    S6: TODO,
-    S7: TODO,
-    S8: TODO,
+    S1: set_pfxo_visibility(1),
+    S2: set_pfxo_visibility(2),
+    S3: set_pfxo_visibility(3),
+    S4: set_pfxo_visibility(4),
+    S5: set_pfxo_visibility(5),
+    S6: set_pfxo_visibility(6),
+    S7: set_pfxo_visibility(7),
+    S8: set_pfxo_visibility(8),
     S9: TODO,
     S10: TODO,
     S11: TODO,
