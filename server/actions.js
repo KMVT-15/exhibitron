@@ -86,12 +86,6 @@ function set_cam(scene, cam) {
     };
 }
 
-function set_overlay(idx) {
-    return (o) => {
-        // pass
-    };
-}
-
 const bg_img_dir = "../assets/backgrounds";
 const bg_img_list = fs.readdirSync(bg_img_dir).map((f) => path.parse(f).name);
 var bg_img_spinner_running = false;
@@ -125,6 +119,57 @@ function set_random_bg(o) {
 
     tick();
 }
+
+var viewport_color_list = ["orange", "green", "blue", "purple"];
+var viewport_spinner_running = false;
+
+function set_random_viewport(o) {
+    if (viewport_spinner_running) return;
+    viewport_spinner_running = true;
+
+    const steps = 20;
+    const final_bg =
+        viewport_color_list[
+            Math.floor(Math.random() * viewport_color_list.length)
+        ];
+    const final_fg =
+        viewport_color_list[
+            Math.floor(Math.random() * viewport_color_list.length)
+        ];
+
+    let i = 0;
+    function tick() {
+        const bg =
+            i === steps - 1
+                ? final_bg
+                : viewport_color_list[
+                      Math.floor(Math.random() * viewport_color_list.length)
+                  ];
+
+        const fg =
+            i === steps - 1
+                ? final_fg
+                : viewport_color_list[
+                      Math.floor(Math.random() * viewport_color_list.length)
+                  ];
+
+        set_viewport_bg(bg)(o);
+
+        i++;
+        if (i < steps) {
+            const delay = 40 + Math.pow(i / steps, 3) * 400;
+            setTimeout(tick, delay);
+            setTimeout(() => {
+                set_viewport_fg(fg)(o);
+            }, delay / 2);
+        } else {
+            viewport_spinner_running = false;
+        }
+    }
+
+    tick();
+}
+
 var fg_rotation = 0;
 var fg_posn_x = 1920 / 2;
 var fg_posn_y = 1080 / 2;
@@ -191,6 +236,22 @@ function set_bg_img(path) {
         set_cam("Background", 5)(o);
         o.setInputSettings("Camera 5", {
             file: `/Users/counter/exhibitron/assets/backgrounds/${path}.jpg`,
+        });
+    };
+}
+
+function set_viewport_bg(color) {
+    return (o, v) => {
+        o.setInputSettings("Viewport Background", {
+            file: `/Users/counter/exhibitron/assets/viewport/viewport_${color}bg.png`,
+        });
+    };
+}
+
+function set_viewport_fg(color) {
+    return (o, v) => {
+        o.setInputSettings("Viewport Foreground", {
+            file: `/Users/counter/exhibitron/assets/viewport/viewport_${color}tv.png`,
         });
     };
 }
@@ -435,6 +496,10 @@ function set_vhs(o, v) {
     o.setFilterEnabled("BLEND", "VHS", v == 1);
 }
 
+function set_scopes(o, v) {
+    o.setVisibility("VIEWPORT", "Scopes", v == 1);
+}
+
 function print() {}
 
 export const actions = {
@@ -464,10 +529,10 @@ export const actions = {
     P24: set_bg_blur,
     P25: set_bg_pixelate,
     P26: TODO,
-    P27: on_press(set_overlay(1)), // DIGITAL
-    P28: on_press(set_overlay(2)), // DIGITAL
-    P29: on_press(set_overlay(3)), // DIGITAL
-    P30: on_press(set_overlay(4)), // DIGITAL
+    P27: on_press(set_viewport_fg("green")), // DIGITAL
+    P28: on_press(set_viewport_fg("blue")), // DIGITAL
+    P29: on_press(set_viewport_fg("orange")), // DIGITAL
+    P30: on_press(set_viewport_fg("purple")), // DIGITAL
     P31: set_twist,
     P32: set_bg_solid_color,
 
@@ -539,14 +604,14 @@ export const actions = {
     B43: TODO,
     B44: TODO,
     B45: TODO,
-    B46: on_press(set_overlay(5)),
-    B47: on_press(set_overlay(6)),
-    B48: on_press(set_overlay(7)),
-    B49: TODO,
-    B50: TODO,
-    B51: TODO,
-    B52: toggle(set_ascii),
-    B53: toggle(set_cartoon),
+    B46: on_press(set_random_viewport),
+    B47: on_press(set_viewport_bg("green")),
+    B48: on_press(set_viewport_bg("blue")),
+    B49: on_press(set_viewport_bg("orange")),
+    B50: on_press(set_viewport_bg("purple")),
+    B51: toggle(set_ascii),
+    B52: toggle(set_cartoon),
+    B53: toggle(set_scopes),
     B54: set_mosaic(1),
     B55: set_mosaic(2),
     B56: set_mosaic(3),

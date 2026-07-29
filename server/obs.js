@@ -127,6 +127,9 @@ export class OBS {
         this.requestItemId("Pre-FX Overlays", "Overlay 7");
         this.requestItemId("Pre-FX Overlays", "Overlay 8");
         this.requestItemId("BLEND", "Foreground");
+        this.requestItemId("VIEWPORT", "Viewport Foreground");
+        this.requestItemId("VIEWPORT", "Viewport Background");
+        this.requestItemId("VIEWPORT", "Scopes");
     }
 
     handleRequestResponse(msg) {
