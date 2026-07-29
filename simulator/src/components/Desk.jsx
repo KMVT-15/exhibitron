@@ -129,9 +129,9 @@ export default function Desk() {
             <Knob x={510} y={242} size={20} uid="P10" onChange={onChange} />
             <Knob x={552} y={215} size={20} uid="P11" onChange={onChange} />
             <Knob x={579} y={179} size={20} uid="P12" onChange={onChange} />
-            <Knob x={426} y={620} size={20} uid="P13" onChange={onChange} />
-            <Knob x={499} y={660} size={20} uid="P14" onChange={onChange} />
-            <Knob x={556} y={592} size={20} uid="P15" onChange={onChange} />
+            <Button x={426} y={620} size={20} uid="P13" onChange={onChange} />
+            <Button x={499} y={660} size={20} uid="P14" onChange={onChange} />
+            <Button x={556} y={592} size={20} uid="P15" onChange={onChange} />
             <Knob x={572} y={530} size={35} uid="P16" onChange={onChange} />
             <Knob x={573+10} y={474+5} size={20} uid="P17" onChange={onChange} />
             <Knob x={591+10} y={427+5} size={20} uid="P18" onChange={onChange} />
@@ -143,10 +143,10 @@ export default function Desk() {
             <Knob x={1060} y={433} size={20} uid="P24" onChange={onChange} />
             <Knob x={1146} y={470} size={20} uid="P25" onChange={onChange} />
             <Knob x={1228} y={422} size={20} uid="P26" onChange={onChange} />
-            <Knob x={1214} y={132} size={20} uid="P27" onChange={onChange} />
-            <Knob x={1199} y={183} size={20} uid="P28" onChange={onChange} />
-            <Knob x={1209} y={227} size={20} uid="P29" onChange={onChange} />
-            <Knob x={1239} y={267} size={20} uid="P30" onChange={onChange} />
+            <Button x={1214} y={132} size={20} uid="P27" onChange={onChange} />
+            <Button x={1199} y={183} size={20} uid="P28" onChange={onChange} />
+            <Button x={1209} y={227} size={20} uid="P29" onChange={onChange} />
+            <Button x={1239} y={267} size={20} uid="P30" onChange={onChange} />
             <Knob x={1262} y={153} size={100} uid="P31" onChange={onChange} />
             <Knob x={1474} y={280} size={35} uid="P32" onChange={onChange} />
             <Switch x={368} y={428} angle={90} uid="S1" onChange={onChange} />
@@ -162,31 +162,31 @@ export default function Desk() {
             <Switch x={952} y={420} uid="S11" onChange={onChange} />
             <Switch x={996} y={419} uid="S12" onChange={onChange} />
             <Switch x={1244} y={484} uid="S13" onChange={onChange} />
-            <Switch x={1509} y={426} angle={90} uid="S14" onChange={onChange} />
+            {/* <Switch x={1509} y={426} angle={90} uid="S14" onChange={onChange} />
             <Switch x={1563} y={426} angle={90} uid="S15" onChange={onChange} />
             <Switch x={1509} y={468} angle={90} uid="S16" onChange={onChange} />
-            <Switch x={1563} y={468} angle={90} uid="S17" onChange={onChange} />
-            <Fader x={150} y={430} angle={-90} style="lever" uid="L1" defaultValue={100} onChange={onChange} />
+            <Switch x={1563} y={468} angle={90} uid="S17" onChange={onChange} /> */}
+            {/* <Fader x={150} y={430} angle={-90} style="lever" uid="L1" defaultValue={100} onChange={onChange} />
             <Fader x={230} y={360} angle={-90} style="lever" uid="L2" defaultValue={100} onChange={onChange} />
             <Fader x={300} y={290} angle={-90} style="lever" uid="L3" defaultValue={100} onChange={onChange} />
             <Fader x={150+1150} y={430+200} angle={-90} style="lever" uid="L4" onChange={onChange} />
             <Fader x={230+1150} y={360+200} angle={-90} style="lever" uid="L5" onChange={onChange} />
-            <Fader x={300+1150} y={290+200} angle={-90} style="lever" uid="L6" onChange={onChange} />
+            <Fader x={300+1150} y={290+200} angle={-90} style="lever" uid="L6" onChange={onChange} /> */}
             <Fader x={170} y={620} angle={-45} uid="F1" defaultValue={50} onChange={onChange} />
             <Fader x={380} y={630} angle={225} uid="F2" defaultValue={50} onChange={onChange} />
-            <Fader x={350} y={360} angle={-45} uid="F3" onChange={onChange} />
+            {/* <Fader x={350} y={360} angle={-45} uid="F3" onChange={onChange} /> */}
             <Fader x={686} y={590} uid="F4" onChange={onChange} />
             <Fader x={805} y={570} angle={-90} uid="F5" onChange={onChange} />
-            <Fader x={890} y={360} uid="F6" onChange={onChange} />
+            {/* <Fader x={890} y={360} uid="F6" onChange={onChange} />
             <Fader x={660} y={230} angle={-90} uid="F7" onChange={onChange} />
             <Fader x={660+(75*1)} y={230} angle={-90} uid="F8" onChange={onChange} />
             <Fader x={660+(75*2)} y={230} angle={-90} uid="F9" onChange={onChange} />
             <Fader x={660+(75*3)} y={230} angle={-90} uid="F10" onChange={onChange} />
-            <Fader x={660+(75*4)} y={230} angle={-90} uid="F11" onChange={onChange} />
+            <Fader x={660+(75*4)} y={230} angle={-90} uid="F11" onChange={onChange} /> */}
             <Fader x={1080} y={620} angle={20} uid="F12" onChange={onChange} />
             <Fader x={1080+(10*1)} y={620+(-34*1)} angle={20} uid="F13" onChange={onChange} />
-            <Fader x={1080+(10*2)} y={620+(-34*2)} angle={20} uid="F14" onChange={onChange} />
-            <Fader x={1080+(10*3)} y={620+(-34*3)} angle={20} uid="F15" onChange={onChange} />
+            {/* <Fader x={1080+(10*2)} y={620+(-34*2)} angle={20} uid="F14" onChange={onChange} />
+            <Fader x={1080+(10*3)} y={620+(-34*3)} angle={20} uid="F15" onChange={onChange} /> */}
             </>
         </div>
     );

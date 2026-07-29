@@ -86,6 +86,12 @@ function set_cam(scene, cam) {
     };
 }
 
+function set_overlay(idx) {
+    return (o) => {
+        // pass
+    };
+}
+
 const bg_img_dir = "../assets/backgrounds";
 const bg_img_list = fs.readdirSync(bg_img_dir).map((f) => path.parse(f).name);
 var bg_img_spinner_running = false;
@@ -219,7 +225,7 @@ function set_rgb(o, v, b) {
 
 function set_contrast(o, v) {
     o.setFilterSettings("BLEND", "Color Correction", {
-        contrast: map(v, -8, 8),
+        contrast: map(v, -4, 4),
     });
 }
 
@@ -444,46 +450,47 @@ export const actions = {
     P10: set_red_sat,
     P11: set_green_sat,
     P12: set_blue_sat,
-    P13: TODO,
-    P14: TODO,
-    P15: TODO,
+    P13: TODO, // DIGITAL
+    P14: TODO, // DIGITAL
+    P15: TODO, // DIGITAL
     P16: set_invert,
-    P17: TODO,
-    P18: TODO,
+    P17: set_fracture,
+    P18: set_fg_heat_wave,
     P19: TODO,
     P20: TODO,
     P21: set_fg_zoom,
-    P22: TODO,
+    P22: set_fg_blend_opacity,
     P23: TODO,
     P24: set_bg_blur,
     P25: set_bg_pixelate,
     P26: TODO,
-    P27: TODO,
-    P28: TODO,
-    P29: TODO,
-    P30: TODO,
-    P31: TODO,
+    P27: on_press(set_overlay(1)), // DIGITAL
+    P28: on_press(set_overlay(2)), // DIGITAL
+    P29: on_press(set_overlay(3)), // DIGITAL
+    P30: on_press(set_overlay(4)), // DIGITAL
+    P31: set_twist,
+    P32: set_bg_solid_color,
 
-    L1: set_rgb,
-    L2: set_rgb,
-    L3: set_rgb,
-    L4: set_twist,
-    L5: set_bulge,
-    L6: TODO,
+    // L1: set_rgb,
+    // L2: set_rgb,
+    // L3: set_rgb,
+    // L4: set_twist,
+    // L5: set_bulge,
+    // L6: TODO,
 
     F1: set_contrast,
-    F2: TODO,
-    F3: set_pfxo_blend_opacity,
+    F2: set_bulge,
+    // F3: set_pfxo_blend_opacity,
     F4: set_fg_zoom,
     F5: set_fg_zoom,
-    F6: set_bg_solid_color,
-    F7: set_fg_blend_opacity,
-    F8: set_fg_blend_circle,
-    F9: set_fg_blend_crt,
-    F10: TODO,
-    F11: TODO,
-    F12: set_fracture,
-    F13: set_fg_heat_wave,
+    // F6: set_bg_solid_color,
+    // F7: set_fg_blend_opacity,
+    // F8: set_fg_blend_circle,
+    // F9: set_fg_blend_crt,
+    // F10: TODO,
+    // F11: TODO,
+    F12: set_fg_blend_circle,
+    F13: set_fg_blend_crt,
     F14: set_fg_pixelate,
     F15: set_frosted_glass,
 
@@ -532,9 +539,9 @@ export const actions = {
     B43: TODO,
     B44: TODO,
     B45: TODO,
-    B46: TODO,
-    B47: TODO,
-    B48: TODO,
+    B46: on_press(set_overlay(5)),
+    B47: on_press(set_overlay(6)),
+    B48: on_press(set_overlay(7)),
     B49: TODO,
     B50: TODO,
     B51: TODO,
@@ -562,10 +569,10 @@ export const actions = {
     S11: TODO,
     S12: TODO,
     S13: TODO,
-    S14: TODO,
-    S15: TODO,
-    S16: TODO,
-    S17: TODO,
+    // S14: TODO,
+    // S15: TODO,
+    // S16: TODO,
+    // S17: TODO,
 
     J1: on_hold(change_fg_posn(-15, 0)),
     J2: on_hold(change_fg_posn(0, -15)),
