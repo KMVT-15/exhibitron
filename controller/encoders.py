@@ -1,5 +1,8 @@
+# This was all claude so beware
+
 import time
 import threading
+import mappings
 from smbus2 import SMBus, i2c_msg
 
 multiplexer_address = 0x70
@@ -9,10 +12,8 @@ encoder_read_delay_seconds = 0.0003
 idle_sleep_seconds = 0.001
 
 encoder_zones = [
-    {"bus": 1, "channel": 0, "count": 7},
-    {"bus": 1, "channel": 1, "count": 6},
-    {"bus": 1, "channel": 2, "count": 7},
-    {"bus": 1, "channel": 3, "count": 4},
+    {"bus": 1, "channel": i, "count": len(chain)}
+    for i, chain in enumerate(mappings.ENCODERS)
 ]
 
 total_encoder_count = sum(zone["count"] for zone in encoder_zones)
