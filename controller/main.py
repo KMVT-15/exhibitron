@@ -22,7 +22,7 @@ def read_all():
 
         for idx, ctrl in enumerate(zone["mapping"]):
             state[ctrl] = 1 - data[idx]
-    
+
     for zone in mappings.ANALOG:
         for i in range(8):
             if i >= len(zone["mapping"]):
