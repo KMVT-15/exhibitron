@@ -26,22 +26,22 @@ DIGITAL = [
 ]
 
 ANALOG = [
-    {
-        "address": 0x48,
-        "mapping": ["F1", "F2", "P2", "P3", "P4"]
-    },
-    {
-        "address": 0x49,
-        "mapping": ["F3", "P5", "P6", "P7", "P9", "P10", "P11", "P12"]
-    },
-    {
-        "address": 0x4A,
-        "mapping": ["P16", "P17", "P18", "P19", "P20", "F4", "F5", "F6"]
-    },
-    {
-        "address": 0x4B,
-        "mapping": ["P22", "P23", "P24", "P25", "F12", "F13", "P26", "P32"]
-    },
+#    {
+#        "address": 0x48,
+#        "mapping": ["F1", "F2", "P2", "P3", "P4"]
+#    },
+#    {
+#        "address": 0x49,
+#        "mapping": ["F3", "P5", "P6", "P7", "P9", "P10", "P11", "P12"]
+#    },
+#    {
+#        "address": 0x4A,
+#        "mapping": ["P16", "P17", "P18", "P19", "P20", "F4", "F5", "F6"]
+#    },
+#    {
+#        "address": 0x4B,
+#        "mapping": ["P22", "P23", "P24", "P25", "F12", "F13", "P26", "P32"]
+#    },
 ]
 
 ENCODERS = ["P1", "P8", "P21", "P31"]
