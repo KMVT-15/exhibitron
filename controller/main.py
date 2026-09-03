@@ -67,20 +67,21 @@ def compare(a, b):
 for zone in mappings.DIGITAL:
     i2c.mcp_init(bus, zone["address"])
 
-state = read_all()
+raw_state = read_all()
+state = raw_state
 last_init = time.time()
-calibrate.calibrate(state)
+calibrate.calibrate(raw_state)
 
 while True:
-    new = read_all()
+    raw_state = read_all()
+    calibrate.handle(raw_state)
+
+    new = calibrate.apply(raw_state)
     changes = compare(state, new)
     state = new
 
-    calibrated = calibrate.apply(state)
-
-    print(calibrated)
-
-    calibrate.handle(state)
+    if changes:
+        print(changes)
     
     if time.time() - last_init > 1:
         for zone in mappings.DIGITAL:
