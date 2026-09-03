@@ -1,11 +1,12 @@
 import smbus2
 import mappings
-import seesaw
 import calibrate
+import encoders
 import i2c
 import time
 
 bus = smbus2.SMBus(1)
+encoder_labels = [label for zone in mappings.ENCODERS for label in zone]
 
 def init_all():
     for zone in mappings.DIGITAL:
@@ -36,17 +37,28 @@ def read_all():
             ctrl = zone["mapping"][i]
             state[ctrl] = calibrate.apply(ctrl, val / 255 * 100)
     
-    for idx, val in enumerate(seesaw.read_encoders()):
-        if idx >= len(mappings.ENCODERS):
+    for idx, val in enumerate(encoders.read_encoders()):
+        if idx >= len(encoder_labels):
             continue
-        
+
+        label = encoder_labels[idx]
+ 
         if not val:
             continue
-        
+ 
         if val > 99999999 or val < -99999999:
             continue
 
-        state[mappings.ENCODERS[idx]] = val
+        # if label in state:
+        #     prev = state[label]
+        # else:
+        #     prev = 0
+
+        # d = prev - val
+        # if d > 5 or d < -5:
+        #     continue
+ 
+        state[label] = val
 
     return state
 
@@ -72,7 +84,10 @@ while True:
 
     if changes:
         print(changes)
-    
+
+    # if "P21" in state:
+    #     print(state["P21"])
+
     calibrate.handle(state)
     
     if time.time() - last_init > 1:
