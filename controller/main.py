@@ -35,7 +35,9 @@ def read_all():
                 continue
 
             ctrl = zone["mapping"][i]
-            state[ctrl] = calibrate.apply(ctrl, val / 255 * 100)
+
+            state[ctrl] = ctrl
+            # state[ctrl] = calibrate.apply(ctrl, val / 255 * 100)
     
     for idx, val in enumerate(encoders.read_encoders()):
         if idx >= len(encoder_labels):
@@ -49,15 +51,6 @@ def read_all():
         if val > 99999999 or val < -99999999:
             continue
 
-        # if label in state:
-        #     prev = state[label]
-        # else:
-        #     prev = 0
-
-        # d = prev - val
-        # if d > 5 or d < -5:
-        #     continue
- 
         state[label] = val
 
     return state
@@ -76,17 +69,16 @@ for zone in mappings.DIGITAL:
 
 state = read_all()
 last_init = time.time()
+calibrate.calibrate(state)
 
 while True:
     new = read_all()
     changes = compare(state, new)
     state = new
 
-    if changes:
-        print(changes)
+    calibrated = calibrate.apply(state)
 
-    # if "P21" in state:
-    #     print(state["P21"])
+    print(calibrated)
 
     calibrate.handle(state)
     
