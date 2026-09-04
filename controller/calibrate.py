@@ -3,9 +3,12 @@ import mappings
 
 RESET_HOLD_DURATION = 5
 RESET_HOLD_TIMER = 0
+ANALOG_DEADZONE = 8
+ENCODER_MAX_JUMP = 100
 
 calibration = {}
 encoders = [label for zone in mappings.ENCODERS for label in zone]
+analog = [value for entry in mappings.ANALOG for value in entry["mapping"]]
 
 def apply(state):
     new_state = {}
@@ -13,9 +16,24 @@ def apply(state):
     for ctrl in state:
         if ctrl in calibration:
             new_val = state[ctrl] - calibration[ctrl]["offset"]
-            new_state[ctrl] = new_val
         else:
-            new_state[ctrl] = state[ctrl]
+            new_val = state[ctrl]
+
+        if ctrl in analog:
+            entry = calibration.setdefault(ctrl, {"offset": 0})
+            prev_val = entry.get("last_output")
+            if prev_val is not None and abs(new_val - prev_val) < ANALOG_DEADZONE:
+                new_val = prev_val
+            entry["last_output"] = new_val
+
+        elif ctrl in encoders:
+            entry = calibration.setdefault(ctrl, {"offset": 0})
+            prev_val = entry.get("last_output")
+            if prev_val is not None and abs(new_val - prev_val) > ENCODER_MAX_JUMP:
+                new_val = prev_val
+            entry["last_output"] = new_val
+
+        new_state[ctrl] = new_val
 
     return new_state
 

@@ -36,7 +36,7 @@ def read_all():
 
             ctrl = zone["mapping"][i]
 
-            state[ctrl] = ctrl
+            state[ctrl] = val
             # state[ctrl] = calibrate.apply(ctrl, val / 255 * 100)
     
     for idx, val in enumerate(encoders.read_encoders()):
@@ -83,9 +83,13 @@ while True:
     if changes:
         print(changes)
     
+    # print(state)
+
+    # if "F1" in state:
+    #     print(state["F1"])
+    
     if time.time() - last_init > 1:
         for zone in mappings.DIGITAL:
             i2c.mcp_init(bus, zone["address"])
 
         last_init = time.time()
-

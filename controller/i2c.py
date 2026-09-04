@@ -12,7 +12,8 @@ def null_errors(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except OSError:
+        except OSError as e:
+            print(e, *args, **kwargs)
             return None
 
     return wrapper

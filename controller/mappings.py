@@ -28,7 +28,7 @@ DIGITAL = [
 ANALOG = [
    {
        "address": 0x48,
-       "mapping": ["F1", "F2", "F4", "F5", "F12", "F13"]
+       "mapping": ["F12", "F13", "F4", "F2", "F1", "F5"]
    },
 ]
 
