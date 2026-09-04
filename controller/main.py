@@ -4,6 +4,17 @@ import calibrate
 import encoders
 import i2c
 import time
+import json
+import websocket
+
+WS_URL = "ws://10.10.3.50:8080"
+
+ws = websocket.create_connection(WS_URL)
+
+def send_params(params: dict):
+    message = json.dumps({"params": params})
+    ws.send(message)
+    print(f">> {message}")
 
 bus = smbus2.SMBus(1)
 encoder_labels = [label for zone in mappings.ENCODERS for label in zone]
@@ -82,6 +93,7 @@ while True:
 
     if changes:
         print(changes)
+        send_params(changes)
     
     # print(state)
 
