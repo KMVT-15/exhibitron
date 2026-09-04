@@ -1,11 +1,17 @@
 binho-host-adapter==0.1.6
 board==1.0
+certifi==2026.7.22
+charset-normalizer==3.5.1
+idna==3.19
 lgpio==0.2.2.0
 pyftdi==0.57.2
 pyserial==3.5
 pyusb==1.3.1
+requests==2.34.2
 RPi.GPIO==0.7.1
 rpi_ws281x==5.0.0
 smbus2==0.6.1
 sysv_ipc==1.2.0
 typing_extensions==4.16.0
+urllib3==2.7.0
+websocket-client==1.9.2
