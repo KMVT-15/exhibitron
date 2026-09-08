@@ -10,10 +10,20 @@ calibration = {}
 encoders = [label for zone in mappings.ENCODERS for label in zone]
 analog = [value for entry in mappings.ANALOG for value in entry["mapping"]]
 
+def map_range(v, b0, b1, b2, b3)
+    return b2 + ((v - b0) * (b3 - b2)) / (b1 - b0);
+
+
 def apply(state):
     new_state = {}
 
     for ctrl in state:
+        if ctrl in mappings.TRANSFORMS:
+            b0, b1 = mappings.TRANSFORMS[ctrl]["old"]
+            b2, b3 = mappings.TRANSFORMS[ctrl]["new"]
+
+            # appy mapping
+
         if ctrl in calibration:
             new_val = state[ctrl] - calibration[ctrl]["offset"]
         else:
