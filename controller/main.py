@@ -93,12 +93,7 @@ while True:
 
     if changes:
         print(changes)
-        send_params(changes)
-    
-    # print(state)
-
-    # if "F1" in state:
-    #     print(state["F1"])
+        # send_params(changes)
     
     if time.time() - last_init > 1:
         for zone in mappings.DIGITAL:
