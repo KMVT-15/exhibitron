@@ -331,8 +331,8 @@ function set_fg_blend_circle(o, v) {
 
 function set_fg_blend_crt(o, v) {
     o.setFilterSettings("Foreground", "CRT", {
-        strength: map(v, 0, 400),
-        feathering: map(v, 0, 200),
+        strength: map(v, -100, 400),
+        feathering: map(v, -100, 200),
     });
 }
 
@@ -406,6 +406,8 @@ function set_fg_zoom(o, v, b) {
     var g = map(b.get("P21"), 0.1, 4);
     var x = map(b.get("F4"), 0, 3);
     var y = map(b.get("F5"), 0, 3);
+
+    console.log(x, y);
 
     o.setItemTransform("BLEND", "Foreground", {
         scaleX: g + x,
@@ -586,16 +588,16 @@ export const actions = {
     B25: on_press(set_bg_img("Subway Car")),
     B26: on_press(set_bg_img("Sunset Beach")),
     B27: on_press(set_bg_img("Theatre")),
-    B28: on_press(change_fg_rotation(10)),
-    B29: on_press(change_fg_rotation(1)),
+    B28: on_hold(change_fg_rotation(10)),
+    B29: on_hold(change_fg_rotation(1)),
     B30: on_press(reset_fg_translation),
-    B31: on_press(change_fg_rotation(-1)),
-    B32: on_press(change_fg_rotation(-10)),
+    B31: on_hold(change_fg_rotation(-1)),
+    B32: on_hold(change_fg_rotation(-10)),
     B33: on_press(print),
-    B34: on_press(set_cam("Background", 1)),
-    B35: on_press(set_cam("Background", 2)),
-    B36: on_press(set_cam("Background", 3)),
-    B37: on_press(set_cam("Background", 4)),
+    B34: on_press(set_cam("Foreground", 1)),
+    B35: on_press(set_cam("Foreground", 2)),
+    B36: on_press(set_cam("Foreground", 3)),
+    B37: on_press(set_cam("Foreground", 4)),
     B38: TODO,
     B39: TODO,
     B40: TODO,
