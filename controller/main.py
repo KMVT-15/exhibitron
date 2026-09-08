@@ -8,13 +8,34 @@ import json
 import websocket
 
 WS_URL = "ws://10.10.3.50:8080"
+RECONNECT_DELAY = 1
+BOARD_ID = "controller"
 
-ws = websocket.create_connection(WS_URL)
+ws = None
+
+def connect_ws():
+    global ws
+    while True:
+        try:
+            ws = websocket.create_connection(WS_URL, timeout=2)
+            print("Connected to %s" % WS_URL)
+            return
+        except OSError:
+            print("Failed to connect to %s, retrying in %s seconds" % (WS_URL, RECONNECT_DELAY))
+            time.sleep(RECONNECT_DELAY)
+
+connect_ws()
 
 def send_params(params: dict):
-    message = json.dumps({"params": params})
-    ws.send(message)
-    print(f">> {message}")
+    message = json.dumps({"params": params, "board": BOARD_ID})
+
+    while True:
+        try:
+            ws.send(message)
+            print(f">> {message}")
+            return
+        except (websocket.WebSocketException, OSError):
+            connect_ws()
 
 bus = smbus2.SMBus(1)
 encoder_labels = [label for zone in mappings.ENCODERS for label in zone]
@@ -92,8 +113,7 @@ while True:
     state = new
 
     if changes:
-        print(changes)
-        # send_params(changes)
+        send_params(changes)
     
     if time.time() - last_init > 1:
         for zone in mappings.DIGITAL:
