@@ -2,10 +2,15 @@ import { OBS } from "./obs.js";
 import { Board } from "./board.js";
 import { WebSocketServer } from "ws";
 import { actions } from "./actions.js";
+import * as dotenv from "dotenv";
 
-var wss = new WebSocketServer({ host: "0.0.0.0", port: 8080 });
-// var obs = new OBS("ws://localhost:4455", "lLiFbK5a3EV2IvjH");
-var obs = new OBS("ws://10.10.3.50:4455", "password");
+dotenv.config();
+
+var wss = new WebSocketServer({
+    host: "0.0.0.0",
+    port: process.env.CONTROL_SERVER_PORT,
+});
+var obs = new OBS(process.env.OBS_WS_URL, process.env.OBS_WS_PASSWORD);
 var board = new Board();
 
 board.onChange((params) => {
