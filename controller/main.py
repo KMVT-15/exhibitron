@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import smbus2
 import mappings
 import calibrate
@@ -6,10 +7,13 @@ import i2c
 import time
 import json
 import websocket
+import os
 
-WS_URL = "ws://10.10.3.50:8080"
-RECONNECT_DELAY = 1
-BOARD_ID = "controller"
+load_dotenv()
+
+WS_URL = os.getenv("WS_URL")
+RECONNECT_DELAY = float(os.getenv("RECONNECT_DELAY"))
+BOARD_ID = os.getenv("BOARD_ID")
 
 ws = None
 
