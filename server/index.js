@@ -49,7 +49,13 @@ import {
     set_glitch,
     set_thermal,
     set_matrix2_filter,
+    set_background,
+    set_bg_img,
+    set_rgb,
+    set_sharpness,
+    set_pre_saturation,
 } from "./actions.js";
+import { hsl_to_rgb } from "./util.js";
 
 dotenv.config();
 
@@ -113,6 +119,12 @@ const shared_state = {
         x: 1920 / 2,
         y: 1080 / 2,
     },
+    color_multiply: {
+        r: 255,
+        g: 255,
+        b: 255,
+    },
+    rainbow_timer: null,
 };
 
 const controls = {
@@ -128,9 +140,48 @@ const controls = {
     P10: new Encoder((v) => {}),
     P11: new Encoder((v) => {}),
     P12: new Encoder((v) => {}),
-    P13: new Digital((v) => {}),
-    P14: new Digital((v) => {}),
-    P15: new Digital((v) => {}),
+    P13: new Digital((v) => {
+        if (v) {
+            shared_state.color_multiply.r = 0;
+        } else {
+            shared_state.color_multiply.r = 255;
+        }
+
+        set_rgb(
+            obs,
+            shared_state.color_multiply.r,
+            shared_state.color_multiply.g,
+            shared_state.color_multiply.b,
+        );
+    }),
+    P14: new Digital((v) => {
+        if (v) {
+            shared_state.color_multiply.g = 0;
+        } else {
+            shared_state.color_multiply.g = 255;
+        }
+
+        set_rgb(
+            obs,
+            shared_state.color_multiply.r,
+            shared_state.color_multiply.g,
+            shared_state.color_multiply.b,
+        );
+    }),
+    P15: new Digital((v) => {
+        if (v) {
+            shared_state.color_multiply.b = 0;
+        } else {
+            shared_state.color_multiply.b = 255;
+        }
+
+        set_rgb(
+            obs,
+            shared_state.color_multiply.r,
+            shared_state.color_multiply.g,
+            shared_state.color_multiply.b,
+        );
+    }),
     P16: encoder_groups.global_sat.channel(),
     P17: encoder_groups.gamma.channel(),
     P18: encoder_groups.bloom.channel(),
@@ -209,18 +260,79 @@ const controls = {
     B13: new Digital((v) => {}),
     B14: new Digital((v) => {}),
     B15: new Digital((v) => {}),
-    B16: new Digital((v) => {}),
-    B17: new Digital((v) => {}),
-    B18: new Digital((v) => {}),
+    B16: new Digital((v) => {
+        if (v) {
+            controls.P13.reset();
+            controls.P14.reset();
+            controls.P15.reset();
+
+            var hue = 0;
+            shared_state.rainbow_timer = setInterval(() => {
+                var col = hsl_to_rgb(hue % 360, 1, 0.5);
+                hue += 5;
+
+                shared_state.color_multiply = {
+                    r: col[0],
+                    g: col[1],
+                    b: col[2],
+                };
+
+                set_rgb(
+                    obs,
+                    shared_state.color_multiply.r,
+                    shared_state.color_multiply.g,
+                    shared_state.color_multiply.b,
+                );
+            }, 50);
+        } else {
+            clearInterval(shared_state.rainbow_timer);
+
+            shared_state.color_multiply = {
+                r: 255,
+                g: 255,
+                b: 255,
+            };
+
+            set_rgb(
+                obs,
+                shared_state.color_multiply.r,
+                shared_state.color_multiply.g,
+                shared_state.color_multiply.b,
+            );
+        }
+    }),
+    B17: new Digital((v) => {
+        if (v) set_sharpness(obs, 1);
+        else set_sharpness(obs, 0);
+    }),
+    B18: new Digital((v) => {
+        if (v) set_pre_saturation(obs, 1);
+        else set_pre_saturation(obs, 0);
+    }),
     B19: new Digital((v) => {}),
     B20: new Digital((v) => {}),
     B21: new Digital((v) => {}),
     B22: new Digital((v) => {}),
     B23: new Digital((v) => {}),
     B24: new Digital((v) => {}),
-    B25: new Digital((v) => {}),
-    B26: new Digital((v) => {}),
-    B27: new Digital((v) => {}),
+    B25: new Digital((v) => {
+        if (v) {
+            set_background(obs, 2);
+            set_bg_img(obs, "Minecraft Cave");
+        }
+    }),
+    B26: new Digital((v) => {
+        if (v) {
+            set_background(obs, 2);
+            set_bg_img(obs, "Minecraft Nether");
+        }
+    }),
+    B27: new Digital((v) => {
+        if (v) {
+            set_background(obs, 2);
+            set_bg_img(obs, "Minecraft Overworld");
+        }
+    }),
     B28: new Digital((v) => {}),
     B29: new Digital((v) => {}),
     B30: new Hold((t) => {
@@ -441,6 +553,23 @@ function reset() {
         }
     }
 
+    shared_state.position = {
+        x: 1920 / 2,
+        y: 1080 / 2,
+    };
+
+    shared_state.color_multiply = {
+        r: 255,
+        g: 255,
+        b: 255,
+    };
+
+    set_rgb(
+        obs,
+        shared_state.color_multiply.r,
+        shared_state.color_multiply.g,
+        shared_state.color_multiply.b,
+    );
     set_position(obs, shared_state.position);
 }
 

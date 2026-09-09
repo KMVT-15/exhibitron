@@ -1,4 +1,4 @@
-import { map } from "./util.js";
+import { map, rgba_to_decimal } from "./util.js";
 import fs from "fs";
 import path from "path";
 import * as dotenv from "dotenv";
@@ -9,6 +9,24 @@ console.log(process.env.ASSET_PATH);
 
 function vmap(v, min, max) {
     return map(v, 0, 1, min, max);
+}
+
+export function set_rgb(obs, r, g, b) {
+    obs.setFilterSettings("Mix", "Color Multiply", {
+        color_multiply: rgba_to_decimal(r, g, b),
+    });
+}
+
+export function set_sharpness(obs, value) {
+    obs.setFilterSettings("Mix", "Sharpen", {
+        sharpness: vmap(value, 0, 10),
+    });
+}
+
+export function set_pre_saturation(obs, value) {
+    obs.setFilterSettings("Mix", "Pre Saturate", {
+        saturation: vmap(value, 0, 10),
+    });
 }
 
 export function set_camera(obs, value) {
