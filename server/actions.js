@@ -33,12 +33,14 @@ export function set_position(obs, posn) {
     obs.setItemTransform("Mix", "Cameras", {
         positionX: posn.x,
         positionY: posn.y,
+        alignment: 0,
     });
 }
 
 export function set_rotation(obs, value) {
     obs.setItemTransform("Mix", "Cameras", {
         rotation: vmap(value, -180, 180),
+        alignment: 0,
     });
 }
 
@@ -196,6 +198,18 @@ export function set_matrix_filter(obs, value) {
 
 export function set_fire_filter(obs, value) {
     obs.setFilterEnabled("Mix", "Fire", value);
+}
+
+export function set_rotating_cube(obs, value) {
+    obs.setFilterEnabled("Cameras", "Rotating Cube", value);
+}
+
+export function set_glitch(obs, value) {
+    obs.setFilterEnabled("Mix", "Glitch", value);
+}
+
+export function set_thermal(obs, value) {
+    obs.setFilterEnabled("Mix", "Thermal", value);
 }
 
 export function set_matrix2_filter(obs, value) {

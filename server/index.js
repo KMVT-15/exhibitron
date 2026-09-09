@@ -1,7 +1,14 @@
 import { OBS } from "./obs.js";
 import { Board } from "./board.js";
 import { WebSocketServer } from "ws";
-import { Encoder, Analog, Digital, EncoderGroup, Hold } from "./controls.js";
+import {
+    Encoder,
+    Analog,
+    Digital,
+    EncoderGroup,
+    Hold,
+    Toggle,
+} from "./controls.js";
 import * as dotenv from "dotenv";
 import {
     set_ascii_filter,
@@ -38,6 +45,10 @@ import {
     set_viewport_fg,
     set_viewport_bg,
     set_fire_filter,
+    set_rotating_cube,
+    set_glitch,
+    set_thermal,
+    set_matrix2_filter,
 } from "./actions.js";
 
 dotenv.config();
@@ -179,7 +190,9 @@ const controls = {
     B4: new Digital((v) => {
         if (v) set_camera(obs, 4);
     }),
-    B5: new Digital((v) => {}),
+    B5: new Toggle((v) => {
+        set_scopes_overlay(obs, v);
+    }),
     B6: new Digital((v) => {
         if (v) {
             encoder_groups.red_sat.reset();
@@ -257,9 +270,15 @@ const controls = {
     B41: new Digital((v) => {
         if (v) controls.P23.reset();
     }),
-    B42: new Digital((v) => {}),
-    B43: new Digital((v) => {}),
-    B44: new Digital((v) => {}),
+    B42: new Digital((v) => {
+        set_rotating_cube(obs, v);
+    }),
+    B43: new Digital((v) => {
+        set_glitch(obs, v);
+    }),
+    B44: new Digital((v) => {
+        set_matrix2_filter(obs, v);
+    }),
     B45: new Digital((v) => {
         if (v) set_random_bg(obs);
     }),
@@ -346,10 +365,10 @@ const controls = {
         set_invert(obs, v * 1);
     }),
     S11: new Digital((v) => {
-        set_ascii_filter(obs, v);
+        set_thermal(obs, v);
     }),
     S12: new Digital((v) => {
-        set_scopes_overlay(obs, v);
+        set_ascii_filter(obs, v);
     }),
     S13: new Digital((v) => {
         set_fire_filter(obs, v);
