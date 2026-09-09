@@ -140,7 +140,7 @@ const controls = {
         (v) => {
             set_rotation(obs, v);
         },
-        { default: 0.5, sensitivity: 300 },
+        { default: 0.5, sensitivity: 300, loop: false },
     ),
     P22: new Encoder((v) => {
         set_frosted_glass(obs, v);
