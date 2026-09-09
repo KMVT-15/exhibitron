@@ -16,11 +16,8 @@ export default function Knob({
     const dragging = useRef(false);
     const lastY = useRef(0);
 
-    // Wrap angle into [0, 360) and convert to a 0-100 value
-    const toValue = (deg) => {
-        const wrapped = ((deg % 360) + 360) % 360;
-        return Math.round((wrapped / 360) * 100);
-    };
+    // Convert angle to a value on the same unbounded scale (no wrapping)
+    const toValue = (deg) => Math.round((deg / 360) * 100);
 
     useEffect(() => {
         onChange(uid, defaultValue);
