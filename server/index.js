@@ -167,7 +167,7 @@ const controls = {
         (v) => {
             set_twist(obs, v);
         },
-        { default: 0.5 },
+        { default: 0.5, loop: false },
     ),
     P32: encoder_groups.contrast.channel(),
 
