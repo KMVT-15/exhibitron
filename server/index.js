@@ -55,7 +55,7 @@ import {
     set_sharpness,
     set_pre_saturation,
 } from "./actions.js";
-import { hsl_to_rgb } from "./util.js";
+import { choose, hsl_to_rgb, map } from "./util.js";
 
 dotenv.config();
 
@@ -112,6 +112,12 @@ const encoder_groups = {
         },
         { default: 0.5 },
     ),
+    sharpness: new EncoderGroup((v) => {
+        set_sharpness(obs, v);
+    }),
+    pre_saturation: new EncoderGroup((v) => {
+        set_pre_saturation(obs, v);
+    }),
 };
 
 const shared_state = {
@@ -132,14 +138,34 @@ const controls = {
     P2: encoder_groups.red_sat.channel(),
     P3: encoder_groups.green_sat.channel(),
     P4: encoder_groups.blue_sat.channel(),
-    P5: new Encoder((v) => {}),
-    P6: new Encoder((v) => {}),
+    P5: encoder_groups.sharpness.channel(),
+    P6: encoder_groups.pre_saturation.channel(),
     P7: encoder_groups.bloom.channel(),
     P8: encoder_groups.gamma.channel(),
-    P9: new Encoder((v) => {}),
-    P10: new Encoder((v) => {}),
-    P11: new Encoder((v) => {}),
-    P12: new Encoder((v) => {}),
+    P9: encoder_groups.hue.channel(),
+    P10: encoder_groups.global_sat.channel(),
+    P11: new Encoder(
+        (v, d) => {
+            if (shared_state.position.x < -850 && d < 0) return;
+            if (shared_state.position.x > 2800 && d > 0) return;
+
+            shared_state.position.x += map(d, 0, 1, 0, 100);
+
+            set_position(obs, shared_state.position);
+        },
+        { loop: false, clamp: false },
+    ),
+    P12: new Encoder(
+        (v, d) => {
+            if (shared_state.position.y < -450 && d < 0) return;
+            if (shared_state.position.y > 1500 && d > 0) return;
+
+            shared_state.position.y += map(d, 0, 1, 0, 100);
+
+            set_position(obs, shared_state.position);
+        },
+        { loop: false, clamp: false },
+    ),
     P13: new Digital((v) => {
         if (v) {
             shared_state.color_multiply.r = 0;
@@ -240,27 +266,61 @@ const controls = {
     B5: new Toggle((v) => {
         set_scopes_overlay(obs, v);
     }),
-    B6: new Digital((v) => {
-        if (v) {
-            encoder_groups.red_sat.reset();
-            encoder_groups.green_sat.reset();
-        }
+    B6: new Toggle((v) => {
+        controls.B7.value = false;
+        if (v) encoder_groups.gamma.control.set(0.8);
+        else encoder_groups.gamma.control.set(encoder_groups.gamma.default);
     }),
-    B7: new Digital((v) => {
-        if (v) {
-            encoder_groups.green_sat.reset();
-            encoder_groups.blue_sat.reset();
-        }
+    B7: new Toggle((v) => {
+        controls.B6.value = false;
+        if (v) encoder_groups.gamma.control.set(0.2);
+        else encoder_groups.gamma.control.set(encoder_groups.gamma.default);
     }),
-    B8: new Digital((v) => {}),
-    B9: new Digital((v) => {}),
-    B10: new Digital((v) => {}),
+    B8: new Toggle((v) => {
+        if (v) encoder_groups.global_sat.control.set(1);
+        else
+            encoder_groups.global_sat.control.set(
+                encoder_groups.global_sat.default,
+            );
+    }),
+    B9: new Toggle((v) => {
+        if (v) encoder_groups.sharpness.control.set(0.8);
+        else
+            encoder_groups.sharpness.control.set(
+                encoder_groups.sharpness.default,
+            );
+    }),
+    B10: new Digital((v) => {
+        if (v) encoder_groups.contrast.control.set(1);
+        else
+            encoder_groups.contrast.control.set(
+                encoder_groups.contrast.default,
+            );
+    }),
     B11: new Digital((v) => {}),
     B12: new Digital((v) => {}),
     B13: new Digital((v) => {}),
     B14: new Digital((v) => {}),
     B15: new Digital((v) => {}),
     B16: new Digital((v) => {
+        if (v) set_random_encoder_group();
+    }),
+    B17: new Digital((v) => {
+        encoder_groups.sharpness.reset();
+        if (v) set_sharpness(obs, 1);
+        else set_sharpness(obs, 0);
+    }),
+    B18: new Digital((v) => {
+        encoder_groups.pre_saturation.reset();
+        if (v) set_pre_saturation(obs, 1);
+        else set_pre_saturation(obs, 0);
+    }),
+    B19: new Digital((v) => {}),
+    B20: new Digital((v) => {}),
+    B21: new Digital((v) => {}),
+    B22: new Digital((v) => {}),
+    B23: new Digital((v) => {}),
+    B24: new Digital((v) => {
         if (v) {
             controls.P13.reset();
             controls.P14.reset();
@@ -301,20 +361,6 @@ const controls = {
             );
         }
     }),
-    B17: new Digital((v) => {
-        if (v) set_sharpness(obs, 1);
-        else set_sharpness(obs, 0);
-    }),
-    B18: new Digital((v) => {
-        if (v) set_pre_saturation(obs, 1);
-        else set_pre_saturation(obs, 0);
-    }),
-    B19: new Digital((v) => {}),
-    B20: new Digital((v) => {}),
-    B21: new Digital((v) => {}),
-    B22: new Digital((v) => {}),
-    B23: new Digital((v) => {}),
-    B24: new Digital((v) => {}),
     B25: new Digital((v) => {
         if (v) {
             set_background(obs, 2);
@@ -335,19 +381,14 @@ const controls = {
     }),
     B28: new Digital((v) => {}),
     B29: new Digital((v) => {}),
-    B30: new Hold((t) => {
-        if (t == 0) {
-            reset_transform();
-        }
-
-        if (t > 2000) {
-            reset();
-            return true;
-        }
+    B30: new Digital((v) => {
+        if (v) reset_random_encoder_group();
     }),
     B31: new Digital((v) => {}),
     B32: new Digital((v) => {}),
-    B33: new Digital((v) => {}),
+    B33: new Digital((v) => {
+        if (v) reset();
+    }),
     B34: new Digital((v) => {
         if (v) set_camera(obs, 1);
     }),
@@ -539,6 +580,51 @@ const controls = {
         set_position(obs, shared_state.position);
     }),
 };
+
+function reset_random_encoder_group() {
+    const candidates = [
+        "bloom",
+        "contrast",
+        "global_sat",
+        "hue",
+        "gamma",
+        "sharpness",
+        "pre_saturation",
+        "red_sat",
+        "green_sat",
+        "blue_sat",
+    ];
+
+    var non_zero = [];
+
+    for (var i = 0; i < candidates.length; i++) {
+        var candidate = encoder_groups[candidates[i]];
+        if (candidate.default != candidate.value) {
+            non_zero.push(candidate);
+        }
+    }
+
+    if (non_zero.length > 0) {
+        return choose(non_zero).reset();
+    }
+}
+
+function set_random_encoder_group() {
+    const candidates = [
+        "bloom",
+        "contrast",
+        "global_sat",
+        "hue",
+        "gamma",
+        "sharpness",
+        "pre_saturation",
+        "red_sat",
+        "green_sat",
+        "blue_sat",
+    ];
+
+    encoder_groups[choose(candidates)].control.set(Math.random());
+}
 
 function reset() {
     for (const [_, value] of Object.entries(controls)) {

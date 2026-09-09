@@ -7,10 +7,9 @@ export class Control {
         this.value = d;
     }
 
-    set(value) {
+    set(value, delta) {
         this.value = value;
-        this.handler(value);
-        console.log(value);
+        this.handler(value, delta);
     }
 
     reset() {
@@ -42,14 +41,15 @@ export class Encoder extends Control {
             const attempted = this.value + step * this.direction;
             const [new_val, new_dir] = reflect(attempted, this.direction);
             this.direction = new_dir;
-            this.set(new_val);
+            this.set(new_val, step);
         } else if (this.clamp) {
-            this.set(clamp(this.value + step, 0, 1));
+            this.set(clamp(this.value + step, 0, 1), step);
         } else {
-            this.set(this.value + step);
+            this.set(this.value + step, step);
         }
     }
 }
+
 export class Analog extends Control {
     constructor(handler, { min = 0, max = 255, default: d = 0 } = {}) {
         super(handler, { default: d });
@@ -158,6 +158,10 @@ export class EncoderGroup {
 
     get value() {
         return this.control.value;
+    }
+
+    get default() {
+        return this.control.default;
     }
 
     reset() {

@@ -106,7 +106,7 @@ export function set_crt_feathering(obs, value) {
 
 export function set_gamma(obs, value) {
     obs.setFilterSettings("Mix", "Color Correction", {
-        gamma: vmap(value, -3, 3),
+        gamma: vmap(value, -2, 2),
     });
 }
 

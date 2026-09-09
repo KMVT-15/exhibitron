@@ -30,6 +30,10 @@ export function rgba_to_decimal(r, g, b, a = 255) {
     return ((a << 24) | (b << 16) | (g << 8) | r) >>> 0;
 }
 
+export function choose(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
 export function hsl_to_rgb(h, s, l) {
     let r, g, b;
     h /= 360;
