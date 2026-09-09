@@ -16,12 +16,6 @@ export default function Knob({
     const dragging = useRef(false);
     const lastY = useRef(0);
 
-    // Wrap angle into [0, 360) and convert to a 0-100 value
-    const toValue = (deg) => {
-        const wrapped = ((deg % 360) + 360) % 360;
-        return Math.round((wrapped / 360) * 100);
-    };
-
     useEffect(() => {
         onChange(uid, defaultValue);
     }, []);
@@ -33,9 +27,14 @@ export default function Knob({
         const handleWheel = (e) => {
             e.preventDefault();
             setAngle((prev) => {
-                const next =
-                    prev + (e.deltaY > 0 ? SCROLL_SPEED : -SCROLL_SPEED);
-                onChange(uid, toValue(next));
+                const next = Math.min(
+                    360,
+                    Math.max(
+                        0,
+                        prev + (e.deltaY > 0 ? SCROLL_SPEED : -SCROLL_SPEED),
+                    ),
+                );
+                onChange(uid, Math.round((next / 360) * 100));
                 return next;
             });
         };
@@ -50,8 +49,11 @@ export default function Knob({
             const delta = lastY.current - e.clientY;
             lastY.current = e.clientY;
             setAngle((prev) => {
-                const next = prev + delta * DRAG_SPEED;
-                onChange(uid, toValue(next));
+                const next = Math.min(
+                    360,
+                    Math.max(0, prev + delta * DRAG_SPEED),
+                );
+                onChange(uid, Math.round((next / 360) * 100));
                 return next;
             });
         };

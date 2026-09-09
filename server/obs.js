@@ -152,18 +152,19 @@ export class OBS {
             case "SetSceneItemTransform":
                 break;
             case "GetSourceFilterList":
-                console.log(d.responseData.filters);
+                // console.log(d.responseData.filters);
                 break;
             case "GetSourceFilterDefaultSettings":
-                console.log(d.responseData.defaultFilterSettings);
+                // console.log(d.responseData.defaultFilterSettings);
                 break;
             case "GetSceneItemId":
                 this.known_items[d.requestId] = d.responseData.sceneItemId;
-                console.log(`Located scene item ${d.requestId}`);
-                console.log(this.known_items);
+                // console.log(`Located scene item ${d.requestId}`);
+                // console.log(this.known_items);
                 break;
             default:
-                console.log(d);
+                break;
+            // console.log(d);
         }
     }
 

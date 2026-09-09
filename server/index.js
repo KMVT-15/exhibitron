@@ -94,6 +94,18 @@ const encoder_groups = {
         },
         { default: 0.5 },
     ),
+    hue: new EncoderGroup(
+        (v) => {
+            set_hue(obs, v);
+        },
+        { default: 0.5 },
+    ),
+    gamma: new EncoderGroup(
+        (v) => {
+            set_gamma(obs, v);
+        },
+        { default: 0.5 },
+    ),
 };
 
 const shared_state = {
@@ -104,24 +116,14 @@ const shared_state = {
 };
 
 const controls = {
-    P1: new Encoder(
-        (v) => {
-            set_hue(obs, v);
-        },
-        { default: 0.5 },
-    ),
+    P1: encoder_groups.hue.channel(),
     P2: encoder_groups.red_sat.channel(),
     P3: encoder_groups.green_sat.channel(),
     P4: encoder_groups.blue_sat.channel(),
     P5: new Encoder((v) => {}),
     P6: new Encoder((v) => {}),
     P7: encoder_groups.bloom.channel(),
-    P8: new Encoder(
-        (v) => {
-            set_gamma(obs, v);
-        },
-        { default: 0.5 },
-    ),
+    P8: encoder_groups.gamma.channel(),
     P9: new Encoder((v) => {}),
     P10: new Encoder((v) => {}),
     P11: new Encoder((v) => {}),
@@ -130,28 +132,22 @@ const controls = {
     P14: new Digital((v) => {}),
     P15: new Digital((v) => {}),
     P16: encoder_groups.global_sat.channel(),
-    P17: new Encoder((v) => {}),
-    P18: new Encoder((v) => {}),
-    P19: new Encoder((v) => {}),
-    P20: new Encoder((v) => {}),
+    P17: encoder_groups.gamma.channel(),
+    P18: encoder_groups.bloom.channel(),
+    P19: encoder_groups.contrast.channel(),
+    P20: encoder_groups.hue.channel(),
     P21: new Encoder(
         (v) => {
             set_rotation(obs, v);
         },
-        { default: 0.5 },
+        { default: 0.5, sensitivity: 300 },
     ),
-    P22: new Encoder(
-        (v) => {
-            set_crt_strength(obs, v);
-        },
-        { sensitivity: 50 },
-    ),
-    P23: new Encoder(
-        (v) => {
-            set_crt_feathering(obs, v);
-        },
-        { sensitivity: 50 },
-    ),
+    P22: new Encoder((v) => {
+        set_frosted_glass(obs, v);
+    }),
+    P23: new Encoder((v) => {
+        set_heat_wave(obs, v);
+    }),
     P24: encoder_groups.red_sat.channel(),
     P25: encoder_groups.green_sat.channel(),
     P26: encoder_groups.blue_sat.channel(),
@@ -397,14 +393,16 @@ const controls = {
     ),
     F12: new Analog(
         (v) => {
-            set_heat_wave(obs, v);
+            set_crt_strength(obs, v);
         },
+
         { min: 255, max: 0 },
     ),
     F13: new Analog(
         (v) => {
-            set_frosted_glass(obs, v);
+            set_crt_feathering(obs, v);
         },
+
         { min: 255, max: 0 },
     ),
 

@@ -8,6 +8,24 @@ export function clamp(v, b0, b1) {
     else return v;
 }
 
+export function wrap(value, min, max) {
+    const range = max - min;
+    return ((((value - min) % range) + range) % range) + min;
+}
+
+export function reflect(value, dir) {
+    while (value > 1 || value < 0) {
+        if (value > 1) {
+            value = 2 - value;
+            dir = -dir;
+        } else if (value < 0) {
+            value = -value;
+            dir = -dir;
+        }
+    }
+    return [value, dir];
+}
+
 export function rgba_to_decimal(r, g, b, a = 255) {
     return ((a << 24) | (b << 16) | (g << 8) | r) >>> 0;
 }

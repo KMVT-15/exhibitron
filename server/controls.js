@@ -1,4 +1,4 @@
-import { clamp, map } from "./util.js";
+import { clamp, map, wrap, reflect } from "./util.js";
 
 export class Control {
     constructor(handler, { default: d = 0 } = {}) {
@@ -21,12 +21,14 @@ export class Control {
 export class Encoder extends Control {
     constructor(
         handler,
-        { default: d = 0, sensitivity = 100, clamp = true } = {},
+        { default: d = 0, sensitivity = 100, clamp = true, loop = true } = {},
     ) {
         super(handler, { default: d });
         this.sensitivity = sensitivity;
         this.raw_value = null;
         this.clamp = clamp;
+        this.loop = loop;
+        this.direction = 1;
     }
 
     input(raw) {
@@ -34,17 +36,20 @@ export class Encoder extends Control {
 
         const delta = raw - this.raw_value;
         this.raw_value = raw;
+        const step = map(delta, 0, this.sensitivity / 2, 0, 1);
 
-        const new_val = this.value + map(delta, 0, this.sensitivity, 0, 1);
-
-        if (this.clamp) {
-            this.set(clamp(new_val, 0, 1));
-        } else {
+        if (this.loop) {
+            const attempted = this.value + step * this.direction;
+            const [new_val, new_dir] = reflect(attempted, this.direction);
+            this.direction = new_dir;
             this.set(new_val);
+        } else if (this.clamp) {
+            this.set(clamp(this.value + step, 0, 1));
+        } else {
+            this.set(this.value + step);
         }
     }
 }
-
 export class Analog extends Control {
     constructor(handler, { min = 0, max = 255, default: d = 0 } = {}) {
         super(handler, { default: d });
@@ -108,10 +113,47 @@ export class Hold extends Control {
     }
 }
 
+// export class EncoderGroup {
+//     constructor(handler, opts = {}) {
+//         this.control = new Control(handler, opts);
+//         this.sensitivity = opts.sensitivity ?? 100;
+//     }
+
+//     get value() {
+//         return this.control.value;
+//     }
+
+//     reset() {
+//         this.control.reset();
+//     }
+
+//     channel() {
+//         const control = this.control;
+//         const sensitivity = this.sensitivity;
+//         let raw_value = null;
+
+//         return {
+//             input(raw) {
+//                 if (raw_value === null) raw_value = raw;
+//                 const delta = raw - raw_value;
+//                 raw_value = raw;
+//                 control.set(
+//                     clamp(
+//                         control.value + map(delta, 0, sensitivity, 0, 1),
+//                         0,
+//                         1,
+//                     ),
+//                 );
+//             },
+//         };
+//     }
+// }
+
 export class EncoderGroup {
     constructor(handler, opts = {}) {
         this.control = new Control(handler, opts);
         this.sensitivity = opts.sensitivity ?? 100;
+        this.loop = opts.loop ?? true;
     }
 
     get value() {
@@ -125,20 +167,25 @@ export class EncoderGroup {
     channel() {
         const control = this.control;
         const sensitivity = this.sensitivity;
+        const loop = this.loop;
         let raw_value = null;
+        let direction = 1;
 
         return {
             input(raw) {
                 if (raw_value === null) raw_value = raw;
                 const delta = raw - raw_value;
                 raw_value = raw;
-                control.set(
-                    clamp(
-                        control.value + map(delta, 0, sensitivity, 0, 1),
-                        0,
-                        1,
-                    ),
-                );
+                const step = map(delta, 0, sensitivity / 2, 0, 1);
+
+                if (loop) {
+                    const attempted = control.value + step * direction;
+                    const [new_val, new_dir] = reflect(attempted, direction);
+                    direction = new_dir;
+                    control.set(new_val);
+                } else {
+                    control.set(clamp(control.value + step, 0, 1));
+                }
             },
         };
     }

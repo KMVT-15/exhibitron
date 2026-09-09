@@ -19,7 +19,7 @@ export default function Fader({
         <input
             type="range"
             min="0"
-            max="100"
+            max="255"
             defaultValue={defaultValue}
             className={clsx(
                 "absolute origin-top-left",

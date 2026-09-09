@@ -13,7 +13,7 @@ export default function Desk() {
         let reconnectTimeout;
 
         function connect() {
-            const ws = new WebSocket("ws://10.8.167.49:8080");
+            const ws = new WebSocket("ws://127.0.0.1:8080");
             wsRef.current = ws;
 
             ws.onclose = () => {
