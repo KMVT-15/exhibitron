@@ -34,6 +34,10 @@ import {
     set_twist,
     set_vhs_filter,
     set_pfxo_visibility,
+    set_random_viewport,
+    set_viewport_fg,
+    set_viewport_bg,
+    set_fire_filter,
 } from "./actions.js";
 
 dotenv.config();
@@ -59,7 +63,7 @@ const encoder_groups = {
         (v) => {
             set_global_sat(obs, v);
         },
-        { default: 0.5 },
+        { default: 0.17 },
     ),
     red_sat: new EncoderGroup(
         (v) => {
@@ -129,18 +133,29 @@ const controls = {
         (v) => {
             set_crt_strength(obs, v);
         },
-        { sensitivity: 1000 },
+        { sensitivity: 50 },
     ),
-    P23: new Encoder((v) => {
-        set_crt_feathering(obs, v);
-    }),
+    P23: new Encoder(
+        (v) => {
+            set_crt_feathering(obs, v);
+        },
+        { sensitivity: 50 },
+    ),
     P24: encoder_groups.red_sat.channel(),
     P25: encoder_groups.green_sat.channel(),
     P26: encoder_groups.blue_sat.channel(),
-    P27: new Digital((v) => {}),
-    P28: new Digital((v) => {}),
-    P29: new Digital((v) => {}),
-    P30: new Digital((v) => {}),
+    P27: new Digital((v) => {
+        if (v) set_viewport_fg(obs, "purple");
+    }),
+    P28: new Digital((v) => {
+        if (v) set_viewport_fg(obs, "green");
+    }),
+    P29: new Digital((v) => {
+        if (v) set_viewport_fg(obs, "blue");
+    }),
+    P30: new Digital((v) => {
+        if (v) set_viewport_fg(obs, "orange");
+    }),
     P31: new Encoder(
         (v) => {
             set_twist(obs, v);
@@ -248,11 +263,21 @@ const controls = {
     B45: new Digital((v) => {
         if (v) set_random_bg(obs);
     }),
-    B46: new Digital((v) => {}),
-    B47: new Digital((v) => {}),
-    B48: new Digital((v) => {}),
-    B49: new Digital((v) => {}),
-    B50: new Digital((v) => {}),
+    B46: new Digital((v) => {
+        if (v) set_random_viewport(obs);
+    }),
+    B47: new Digital((v) => {
+        if (v) set_viewport_bg(obs, "purple");
+    }),
+    B48: new Digital((v) => {
+        if (v) set_viewport_bg(obs, "green");
+    }),
+    B49: new Digital((v) => {
+        if (v) set_viewport_bg(obs, "blue");
+    }),
+    B50: new Digital((v) => {
+        if (v) set_viewport_bg(obs, "orange");
+    }),
     B51: new Digital((v) => {
         set_rain_filter(obs, v);
     }),
@@ -323,11 +348,12 @@ const controls = {
     S11: new Digital((v) => {
         set_ascii_filter(obs, v);
     }),
-    S12: new Digital((v) => {}),
-    S13: new Digital((v) => {
+    S12: new Digital((v) => {
         set_scopes_overlay(obs, v);
     }),
-
+    S13: new Digital((v) => {
+        set_fire_filter(obs, v);
+    }),
     F1: new Analog(
         (v) => {
             if (v < 0.1) v = 0;

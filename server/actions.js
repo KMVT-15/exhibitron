@@ -1,6 +1,11 @@
 import { map } from "./util.js";
 import fs from "fs";
 import path from "path";
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
+console.log(process.env.ASSET_PATH);
 
 function vmap(v, min, max) {
     return map(v, 0, 1, min, max);
@@ -51,7 +56,7 @@ export function set_scale_y(obs, value) {
 
 export function set_mask(obs, value) {
     obs.setFilterSettings("Cameras", "Image Mask", {
-        image_path: `/Users/counter/exhibitron/assets/masks/${value}.png`,
+        image_path: `${process.env.ASSET_PATH}/assets/masks/${value}.png`,
     });
 }
 
@@ -211,7 +216,19 @@ export function set_pfxo_visibility(obs, index, value) {
 
 export function set_bg_img(obs, path) {
     obs.setInputSettings("Background 1", {
-        file: `/Users/counter/exhibitron/assets/backgrounds/${path}.jpg`,
+        file: `${process.env.ASSET_PATH}/assets/backgrounds/${path}.jpg`,
+    });
+}
+
+export function set_viewport_bg(obs, color) {
+    obs.setInputSettings("Viewport Background", {
+        file: `${process.env.ASSET_PATH}/assets/viewport/viewport_${color}bg.png`,
+    });
+}
+
+export function set_viewport_fg(obs, color) {
+    obs.setInputSettings("Viewport Foreground", {
+        file: `${process.env.ASSET_PATH}/assets/viewport/viewport_${color}tv.png`,
     });
 }
 
@@ -244,6 +261,56 @@ export function set_random_bg(obs) {
             setTimeout(tick, delay);
         } else {
             bg_img_spinner_running = false;
+        }
+    }
+
+    tick();
+}
+
+var viewport_color_list = ["orange", "green", "blue", "purple"];
+var viewport_spinner_running = false;
+
+export function set_random_viewport(obs) {
+    if (viewport_spinner_running) return;
+    viewport_spinner_running = true;
+
+    const steps = 20;
+    const final_bg =
+        viewport_color_list[
+            Math.floor(Math.random() * viewport_color_list.length)
+        ];
+    const final_fg =
+        viewport_color_list[
+            Math.floor(Math.random() * viewport_color_list.length)
+        ];
+
+    let i = 0;
+    function tick() {
+        const bg =
+            i === steps - 1
+                ? final_bg
+                : viewport_color_list[
+                      Math.floor(Math.random() * viewport_color_list.length)
+                  ];
+
+        const fg =
+            i === steps - 1
+                ? final_fg
+                : viewport_color_list[
+                      Math.floor(Math.random() * viewport_color_list.length)
+                  ];
+
+        set_viewport_bg(obs, bg);
+
+        i++;
+        if (i < steps) {
+            const delay = 40 + Math.pow(i / steps, 3) * 400;
+            setTimeout(tick, delay);
+            setTimeout(() => {
+                set_viewport_fg(obs, fg);
+            }, delay / 2);
+        } else {
+            viewport_spinner_running = false;
         }
     }
 
