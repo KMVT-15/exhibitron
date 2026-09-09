@@ -10,6 +10,7 @@ export class OBS {
         this.password = password;
         this.authenticated = false;
         this.known_items = {};
+        this._on = {};
 
         this.socket.addEventListener("message", (event) => {
             this.handleMessage(JSON.parse(event.data));
@@ -30,6 +31,10 @@ export class OBS {
         this.socket.addEventListener("error", (error) => {
             console.error("WebSocket error:", error);
         });
+    }
+
+    on(event, func) {
+        this._on[event] = func;
     }
 
     send(data, force = false) {
@@ -89,7 +94,7 @@ export class OBS {
                 requestType: "GetSceneItemTransform",
                 requestId: "",
                 requestData: {
-                    sceneName: "BLEND",
+                    sceneName: "Cameras",
                     sceneItemId: 2,
                 },
             },
@@ -106,18 +111,12 @@ export class OBS {
             },
         });
 
-        this.requestItemId("Foreground", "Camera 1");
-        this.requestItemId("Foreground", "Camera 2");
-        this.requestItemId("Foreground", "Camera 3");
-        this.requestItemId("Foreground", "Camera 4");
-        this.requestItemId("Background", "Camera 1");
-        this.requestItemId("Background", "Camera 2");
-        this.requestItemId("Background", "Camera 3");
-        this.requestItemId("Background", "Camera 4");
-        this.requestItemId("Background", "Camera 5");
-        this.requestItemId("Background", "Camera 6");
-        this.requestItemId("Background", "Camera 7");
-        this.requestItemId("Background", "Camera 8");
+        this.requestItemId("Cameras", "Camera 1");
+        this.requestItemId("Cameras", "Camera 2");
+        this.requestItemId("Cameras", "Camera 3");
+        this.requestItemId("Cameras", "Camera 4");
+        this.requestItemId("Background", "Background 1 1");
+        this.requestItemId("Background", "Background 2");
         this.requestItemId("Pre-FX Overlays", "Overlay 1");
         this.requestItemId("Pre-FX Overlays", "Overlay 2");
         this.requestItemId("Pre-FX Overlays", "Overlay 3");
@@ -126,10 +125,17 @@ export class OBS {
         this.requestItemId("Pre-FX Overlays", "Overlay 6");
         this.requestItemId("Pre-FX Overlays", "Overlay 7");
         this.requestItemId("Pre-FX Overlays", "Overlay 8");
-        this.requestItemId("BLEND", "Foreground");
-        this.requestItemId("VIEWPORT", "Viewport Foreground");
-        this.requestItemId("VIEWPORT", "Viewport Background");
-        this.requestItemId("VIEWPORT", "Scopes");
+        this.requestItemId("Mix", "Cameras");
+        this.requestItemId("Viewport", "Viewport Foreground");
+        this.requestItemId("Viewport", "Viewport Background");
+        this.requestItemId("Viewport", "Scopes");
+
+        if (this._on["ready"]) {
+            // TODO: Actually wait until all the above stuff has returned
+            setTimeout(() => {
+                this._on["ready"]();
+            }, 500);
+        }
     }
 
     handleRequestResponse(msg) {
