@@ -18,12 +18,6 @@ def apply(state):
     new_state = {}
 
     for ctrl in state:
-        if ctrl in mappings.TRANSFORMS:
-            b0, b1 = mappings.TRANSFORMS[ctrl]["old"]
-            b2, b3 = mappings.TRANSFORMS[ctrl]["new"]
-
-            state[ctrl] = map_range(state[ctrl], b0, b1, b2, b3)
-
         if ctrl in calibration:
             new_val = state[ctrl] - calibration[ctrl]["offset"]
         else:
