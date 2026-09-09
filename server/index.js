@@ -54,6 +54,8 @@ import {
     set_rgb,
     set_sharpness,
     set_pre_saturation,
+    set_ripple,
+    set_big_glitch,
 } from "./actions.js";
 import { choose, hsl_to_rgb, map } from "./util.js";
 
@@ -291,11 +293,7 @@ const controls = {
             );
     }),
     B10: new Digital((v) => {
-        if (v) encoder_groups.contrast.control.set(1);
-        else
-            encoder_groups.contrast.control.set(
-                encoder_groups.contrast.default,
-            );
+        set_big_glitch(obs, v);
     }),
     B11: new Digital((v) => {}),
     B12: new Digital((v) => {}),
@@ -384,7 +382,9 @@ const controls = {
     B30: new Digital((v) => {
         if (v) reset_random_encoder_group();
     }),
-    B31: new Digital((v) => {}),
+    B31: new Digital((v) => {
+        set_ripple(obs, v);
+    }),
     B32: new Digital((v) => {}),
     B33: new Digital((v) => {
         if (v) reset();

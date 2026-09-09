@@ -184,6 +184,14 @@ export function set_heat_wave(obs, value) {
     });
 }
 
+export function set_ripple(obs, value) {
+    obs.setFilterEnabled("Mix", "Ripple", value);
+}
+
+export function set_big_glitch(obs, value) {
+    obs.setFilterEnabled("Viewport", "Glitch", value);
+}
+
 export function set_frosted_glass(obs, value) {
     obs.setFilterSettings("Mix", "Frosted Glass", {
         Amount: vmap(value, 0, 0.03),
