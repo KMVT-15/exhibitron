@@ -61,6 +61,11 @@ import { choose, hsl_to_rgb, map } from "./util.js";
 
 dotenv.config();
 
+// TODO:
+// B28, B29, B32 need 3 "ripple" like effects
+// B19-23 need something interesting
+// B11-15 need masking effects?
+
 const wss = new WebSocketServer({
     host: "0.0.0.0",
     port: process.env.CONTROL_SERVER_PORT,
