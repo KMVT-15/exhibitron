@@ -787,13 +787,12 @@ board.onChange((params) => {
     for (const [key, value] of Object.entries(params)) {
         if (controls[key]) {
             if (
-                ((controls[key] instanceof Digital ||
+                (controls[key] instanceof Digital ||
                     controls[key] instanceof Toggle) &&
-                    value &&
-                    key[0] !== "J" &&
-                    key !== "B38" &&
-                    key !== "B39") ||
-                (key == "SPECIAL1" && value)
+                value &&
+                key[0] !== "J" &&
+                key !== "B38" &&
+                key !== "B39"
             ) {
                 if (
                     Math.random() < gimmick_chance &&
@@ -804,6 +803,26 @@ board.onChange((params) => {
                     gimmick_index = (gimmick_index + 1) % gimmick_list.length;
                 }
             }
+
+            if (key == "SPECIAL1" && value) {
+                obs.playMedia("Dance");
+            }
+            if (key == "SPECIAL2" && value) {
+                obs.playMedia("Wave");
+            }
+            if (key == "SPECIAL3" && value) {
+                obs.playMedia("Run 1");
+            }
+            if (key == "SPECIAL4" && value) {
+                obs.playMedia("Run 2");
+            }
+            if (key == "SPECIAL5" && value) {
+                obs.playMedia("Walk Up");
+            }
+            if (key == "SPECIAL6" && value) {
+                obs.playMedia("Peek");
+            }
+
             controls[key].input(value);
         }
     }
