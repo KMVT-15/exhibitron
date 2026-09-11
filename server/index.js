@@ -15,7 +15,7 @@ import {
     set_bloom,
     set_blue_sat,
     set_bulge,
-    set_camera,
+    set_foreground,
     set_cartoon_filter,
     set_contrast,
     set_crt_feathering,
@@ -56,6 +56,9 @@ import {
     set_pre_saturation,
     set_ripple,
     set_big_glitch,
+    set_rgb_split,
+    set_fish_eye,
+    set_subpixel,
 } from "./actions.js";
 import { choose, hsl_to_rgb, map } from "./util.js";
 
@@ -65,6 +68,7 @@ dotenv.config();
 // B28, B29, B32 need 3 "ripple" like effects
 // B19-23 need something interesting
 // B11-15 need masking effects?
+// fix zooming in/out
 
 const wss = new WebSocketServer({
     host: "0.0.0.0",
@@ -235,9 +239,12 @@ const controls = {
     P24: encoder_groups.red_sat.channel(),
     P25: encoder_groups.green_sat.channel(),
     P26: encoder_groups.blue_sat.channel(),
-    P27: new Digital((v) => {
-        if (v) set_viewport_fg(obs, "purple");
-    }),
+    P27: new Digital(
+        (v) => {
+            if (v) set_viewport_fg(obs, "purple");
+        },
+        { default: true },
+    ),
     P28: new Digital((v) => {
         if (v) set_viewport_fg(obs, "green");
     }),
@@ -257,18 +264,18 @@ const controls = {
 
     B1: new Digital(
         (v) => {
-            if (v) set_camera(obs, 1);
+            if (v) set_foreground(obs, "Camera 1");
         },
         { default: true },
     ),
     B2: new Digital((v) => {
-        if (v) set_camera(obs, 2);
+        if (v) set_foreground(obs, "Camera 2");
     }),
     B3: new Digital((v) => {
-        if (v) set_camera(obs, 3);
+        if (v) set_foreground(obs, "Camera 3");
     }),
     B4: new Digital((v) => {
-        if (v) set_camera(obs, 4);
+        if (v) set_foreground(obs, "Camera 4");
     }),
     B5: new Toggle((v) => {
         set_scopes_overlay(obs, v);
@@ -318,11 +325,21 @@ const controls = {
         if (v) set_pre_saturation(obs, 1);
         else set_pre_saturation(obs, 0);
     }),
-    B19: new Digital((v) => {}),
-    B20: new Digital((v) => {}),
-    B21: new Digital((v) => {}),
-    B22: new Digital((v) => {}),
-    B23: new Digital((v) => {}),
+    B19: new Digital((v) => {
+        if (v) set_foreground(obs, "Blend 1");
+    }),
+    B20: new Digital((v) => {
+        if (v) set_foreground(obs, "Multiview 2");
+    }),
+    B21: new Digital((v) => {
+        if (v) set_foreground(obs, "Multiview 1");
+    }),
+    B22: new Digital((v) => {
+        if (v) set_foreground(obs, "Multiview 3");
+    }),
+    B23: new Digital((v) => {
+        if (v) set_foreground(obs, "Blend 2");
+    }),
     B24: new Digital((v) => {
         if (v) {
             controls.P13.reset();
@@ -366,45 +383,51 @@ const controls = {
     }),
     B25: new Digital((v) => {
         if (v) {
-            set_background(obs, 2);
+            set_background(obs, "Background Image");
             set_bg_img(obs, "Minecraft Cave");
         }
     }),
     B26: new Digital((v) => {
         if (v) {
-            set_background(obs, 2);
+            set_background(obs, "Background Image");
             set_bg_img(obs, "Minecraft Nether");
         }
     }),
     B27: new Digital((v) => {
         if (v) {
-            set_background(obs, 2);
+            set_background(obs, "Background Image");
             set_bg_img(obs, "Minecraft Overworld");
         }
     }),
-    B28: new Digital((v) => {}),
-    B29: new Digital((v) => {}),
+    B28: new Digital((v) => {
+        set_fish_eye(obs, v);
+    }),
+    B29: new Digital((v) => {
+        set_subpixel(obs, v);
+    }),
     B30: new Digital((v) => {
         if (v) reset_random_encoder_group();
     }),
     B31: new Digital((v) => {
         set_ripple(obs, v);
     }),
-    B32: new Digital((v) => {}),
+    B32: new Digital((v) => {
+        set_rgb_split(obs, v);
+    }),
     B33: new Digital((v) => {
         if (v) reset();
     }),
     B34: new Digital((v) => {
-        if (v) set_camera(obs, 1);
+        if (v) set_foreground(obs, "Camera 1");
     }),
     B35: new Digital((v) => {
-        if (v) set_camera(obs, 2);
+        if (v) set_foreground(obs, "Camera 2");
     }),
     B36: new Digital((v) => {
-        if (v) set_camera(obs, 3);
+        if (v) set_foreground(obs, "Camera 3");
     }),
     B37: new Digital((v) => {
-        if (v) set_camera(obs, 4);
+        if (v) set_foreground(obs, "Camera 4");
     }),
     B38: new Digital((v) => {
         if (v) {
@@ -439,9 +462,12 @@ const controls = {
     B46: new Digital((v) => {
         if (v) set_random_viewport(obs);
     }),
-    B47: new Digital((v) => {
-        if (v) set_viewport_bg(obs, "purple");
-    }),
+    B47: new Digital(
+        (v) => {
+            if (v) set_viewport_bg(obs, "purple");
+        },
+        { default: true },
+    ),
     B48: new Digital((v) => {
         if (v) set_viewport_bg(obs, "green");
     }),
@@ -539,6 +565,7 @@ const controls = {
     }),
     F4: new Analog(
         (v) => {
+            console.log(v);
             set_scale_x(obs, v);
         },
         { default: 0.5 },
@@ -616,13 +643,8 @@ function reset_random_encoder_group() {
 
 function set_random_encoder_group() {
     const candidates = [
-        "bloom",
-        "contrast",
         "global_sat",
         "hue",
-        "gamma",
-        "sharpness",
-        "pre_saturation",
         "red_sat",
         "green_sat",
         "blue_sat",

@@ -31,6 +31,20 @@ export class OBS {
         this.socket.addEventListener("error", (error) => {
             console.error("WebSocket error:", error);
         });
+
+        this.foreground_layers = [
+            "Camera 1",
+            "Camera 2",
+            "Camera 3",
+            "Camera 4",
+            "Multiview 1",
+            "Multiview 2",
+            "Multiview 3",
+            "Blend 1",
+            "Blend 2",
+        ];
+
+        this.background_layers = ["Background Image", "Solid Color"];
     }
 
     on(event, func) {
@@ -76,17 +90,17 @@ export class OBS {
     }
 
     initialize() {
-        this.send({
-            op: 6,
-            d: {
-                requestType: "GetSourceFilter",
-                requestId: "",
-                requestData: {
-                    sourceName: "Camera 8",
-                    filterName: "Fill Color",
-                },
-            },
-        });
+        // this.send({
+        //     op: 6,
+        //     d: {
+        //         requestType: "GetSourceFilter",
+        //         requestId: "",
+        //         requestData: {
+        //             sourceName: "Camera 8",
+        //             filterName: "Fill Color",
+        //         },
+        //     },
+        // });
 
         this.send({
             op: 6,
@@ -94,7 +108,7 @@ export class OBS {
                 requestType: "GetSceneItemTransform",
                 requestId: "",
                 requestData: {
-                    sceneName: "Cameras",
+                    sceneName: "Mix",
                     sceneItemId: 2,
                 },
             },
@@ -111,12 +125,14 @@ export class OBS {
             },
         });
 
-        this.requestItemId("Cameras", "Camera 1");
-        this.requestItemId("Cameras", "Camera 2");
-        this.requestItemId("Cameras", "Camera 3");
-        this.requestItemId("Cameras", "Camera 4");
-        this.requestItemId("Background", "Background 1 1");
-        this.requestItemId("Background", "Background 2");
+        this.foreground_layers.forEach((l) => {
+            this.requestItemId("Foreground", l);
+        });
+
+        this.background_layers.forEach((l) => {
+            this.requestItemId("Background", l);
+        });
+
         this.requestItemId("Pre-FX Overlays", "Overlay 1");
         this.requestItemId("Pre-FX Overlays", "Overlay 2");
         this.requestItemId("Pre-FX Overlays", "Overlay 3");
@@ -125,7 +141,7 @@ export class OBS {
         this.requestItemId("Pre-FX Overlays", "Overlay 6");
         this.requestItemId("Pre-FX Overlays", "Overlay 7");
         this.requestItemId("Pre-FX Overlays", "Overlay 8");
-        this.requestItemId("Mix", "Cameras");
+        this.requestItemId("Mix", "Foreground");
         this.requestItemId("Viewport", "Viewport Foreground");
         this.requestItemId("Viewport", "Viewport Background");
         this.requestItemId("Viewport", "Scopes");
@@ -163,8 +179,8 @@ export class OBS {
                 // console.log(this.known_items);
                 break;
             default:
-                break;
-            // console.log(d);
+                // break;
+                console.log(d);
         }
     }
 
@@ -236,6 +252,8 @@ export class OBS {
     setItemTransform(sceneName, itemName, transformData) {
         var sceneItemId =
             this.known_items[encode_scene_item(sceneName, itemName)];
+
+        console.log(sceneItemId, transformData);
 
         this.send({
             op: 6,

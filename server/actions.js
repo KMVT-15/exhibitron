@@ -29,16 +29,16 @@ export function set_pre_saturation(obs, value) {
     });
 }
 
-export function set_camera(obs, value) {
-    for (var i = 1; i <= 4; i++) {
-        obs.setVisibility("Cameras", `Camera ${i}`, i == value);
-    }
+export function set_foreground(obs, value) {
+    obs.foreground_layers.forEach((l) => {
+        obs.setVisibility("Foreground", l, l == value);
+    });
 }
 
 export function set_background(obs, value) {
-    for (var i = 1; i <= 2; i++) {
-        obs.setVisibility("Background", `Background ${i}`, i == value);
-    }
+    obs.background_layers.forEach((l) => {
+        obs.setVisibility("Background", l, l == value);
+    });
 }
 
 export function set_twist(obs, value) {
@@ -48,7 +48,7 @@ export function set_twist(obs, value) {
 }
 
 export function set_position(obs, posn) {
-    obs.setItemTransform("Mix", "Cameras", {
+    obs.setItemTransform("Mix", "Foreground", {
         positionX: posn.x,
         positionY: posn.y,
         alignment: 0,
@@ -56,26 +56,26 @@ export function set_position(obs, posn) {
 }
 
 export function set_rotation(obs, value) {
-    obs.setItemTransform("Mix", "Cameras", {
+    obs.setItemTransform("Mix", "Foreground", {
         rotation: vmap(value, -180, 180),
         alignment: 0,
     });
 }
 
 export function set_scale_x(obs, value) {
-    obs.setItemTransform("Mix", "Cameras", {
+    obs.setItemTransform("Mix", "Foreground", {
         scaleX: vmap(value, 0, 1) * 2,
     });
 }
 
 export function set_scale_y(obs, value) {
-    obs.setItemTransform("Mix", "Cameras", {
+    obs.setItemTransform("Mix", "Foreground", {
         scaleY: vmap(value, 0, 1) * 2,
     });
 }
 
 export function set_mask(obs, value) {
-    obs.setFilterSettings("Cameras", "Image Mask", {
+    obs.setFilterSettings("Foreground", "Image Mask", {
         image_path: `${process.env.ASSET_PATH}/assets/masks/${value}.png`,
     });
 }
@@ -93,13 +93,13 @@ export function set_contrast(obs, value) {
 }
 
 export function set_crt_strength(obs, value) {
-    obs.setFilterSettings("Cameras", "CRT", {
+    obs.setFilterSettings("Foreground", "CRT", {
         strength: vmap(value, 0, 400),
     });
 }
 
 export function set_crt_feathering(obs, value) {
-    obs.setFilterSettings("Cameras", "CRT", {
+    obs.setFilterSettings("Foreground", "CRT", {
         feathering: vmap(value, 0, 200),
     });
 }
@@ -156,7 +156,7 @@ export function set_bulge(obs, value) {
 }
 
 export function set_mosaic(obs, value) {
-    obs.setFilterSettings("Cameras", "Mosaic", {
+    obs.setFilterSettings("Foreground", "Mosaic", {
         divisions: value,
     });
 }
@@ -179,7 +179,7 @@ export function set_pixelate(obs, value) {
 }
 
 export function set_heat_wave(obs, value) {
-    obs.setFilterSettings("Cameras", "Heat Wave", {
+    obs.setFilterSettings("Foreground", "Heat Wave", {
         Strength: vmap(value, 0, 25),
     });
 }
@@ -190,6 +190,14 @@ export function set_ripple(obs, value) {
 
 export function set_big_glitch(obs, value) {
     obs.setFilterEnabled("Viewport", "Glitch", value);
+}
+
+export function set_fish_eye(obs, value) {
+    obs.setFilterEnabled("Mix", "Fish Eye", value);
+}
+
+export function set_subpixel(obs, value) {
+    obs.setFilterEnabled("Mix", "Subpixel", value);
 }
 
 export function set_frosted_glass(obs, value) {
@@ -210,6 +218,10 @@ export function set_ascii_filter(obs, value) {
     obs.setFilterEnabled("Mix", "ASCII", value);
 }
 
+export function set_rgb_split(obs, value) {
+    obs.setFilterEnabled("Mix", "RGB Split", value);
+}
+
 export function set_cartoon_filter(obs, value) {
     obs.setFilterEnabled("Mix", "Cartoon", value);
 }
@@ -227,7 +239,7 @@ export function set_fire_filter(obs, value) {
 }
 
 export function set_rotating_cube(obs, value) {
-    obs.setFilterEnabled("Cameras", "Rotating Cube", value);
+    obs.setFilterEnabled("Foreground", "Rotating Cube", value);
 }
 
 export function set_glitch(obs, value) {
@@ -255,7 +267,7 @@ export function set_pfxo_visibility(obs, index, value) {
 }
 
 export function set_bg_img(obs, path) {
-    obs.setInputSettings("Background 1", {
+    obs.setInputSettings("Background Image", {
         file: `${process.env.ASSET_PATH}/assets/backgrounds/${path}.jpg`,
     });
 }
