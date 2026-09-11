@@ -649,6 +649,7 @@ const controls = {
     F12: new Analog(
         (v) => {
             set_crt_strength(obs, v);
+            if (v) controls.B11.reset();
         },
 
         { min: 255, max: 0 },
@@ -656,6 +657,7 @@ const controls = {
     F13: new Analog(
         (v) => {
             set_crt_feathering(obs, v);
+            if (v) controls.B11.reset();
         },
 
         { min: 255, max: 0 },
