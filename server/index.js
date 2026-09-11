@@ -491,7 +491,12 @@ const controls = {
         set_rgb_split(obs, v);
     }),
     B33: new Digital((v) => {
-        if (v) reset();
+        if (v) {
+            obs.playMedia("Explosion");
+            setTimeout(() => {
+                reset();
+            }, 1200);
+        }
     }),
     B34: new Digital((v) => {
         if (v) set_foreground(obs, "Camera 1");
