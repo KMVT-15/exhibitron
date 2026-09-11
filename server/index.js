@@ -787,12 +787,13 @@ board.onChange((params) => {
     for (const [key, value] of Object.entries(params)) {
         if (controls[key]) {
             if (
-                (controls[key] instanceof Digital ||
+                ((controls[key] instanceof Digital ||
                     controls[key] instanceof Toggle) &&
-                value &&
-                key[0] !== "J" &&
-                key !== "B38" &&
-                key !== "B39"
+                    value &&
+                    key[0] !== "J" &&
+                    key !== "B38" &&
+                    key !== "B39") ||
+                (key == "SPECIAL1" && value)
             ) {
                 if (
                     Math.random() < gimmick_chance &&
