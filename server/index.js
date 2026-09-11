@@ -790,7 +790,9 @@ board.onChange((params) => {
                 (controls[key] instanceof Digital ||
                     controls[key] instanceof Toggle) &&
                 value &&
-                key[0] !== "J"
+                key[0] !== "J" &&
+                key !== "B38" &&
+                key !== "B39"
             ) {
                 if (
                     Math.random() < gimmick_chance &&
