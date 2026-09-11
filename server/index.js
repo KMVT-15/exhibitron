@@ -376,7 +376,7 @@ const controls = {
     }),
     B15: new Toggle((v) => {
         if (v) {
-            set_fg_mask(obs, "sqaure");
+            set_fg_mask(obs, "square");
             controls.F12.reset();
             controls.F13.reset();
         } else {
