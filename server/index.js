@@ -789,7 +789,8 @@ board.onChange((params) => {
             if (
                 (controls[key] instanceof Digital ||
                     controls[key] instanceof Toggle) &&
-                value
+                value &&
+                key[0] !== "J"
             ) {
                 if (
                     Math.random() < gimmick_chance &&
@@ -798,7 +799,6 @@ board.onChange((params) => {
                     last_gimmick = Date.now();
                     obs.playMedia(gimmick_list[gimmick_index]);
                     gimmick_index = (gimmick_index + 1) % gimmick_list.length;
-                    break;
                 }
             }
             controls[key].input(value);
