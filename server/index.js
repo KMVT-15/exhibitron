@@ -804,6 +804,8 @@ board.onChange((params) => {
                 }
             }
 
+            controls[key].input(value);
+        } else {
             if (key == "SPECIAL1" && value) {
                 obs.playMedia("Dance");
             }
@@ -822,8 +824,6 @@ board.onChange((params) => {
             if (key == "SPECIAL6" && value) {
                 obs.playMedia("Peek");
             }
-
-            controls[key].input(value);
         }
     }
 });
