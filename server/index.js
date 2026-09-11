@@ -775,11 +775,32 @@ obs.on("ready", () => {
     reset();
 });
 
+var last_gimmick = -Infinity;
+var gimmick_cooldown = 60000;
+var gimmick_chance = 0.01;
+var gimmick_list = ["Run 1", "Run 2", "Walk Up", "Peek"];
+var gimmick_index = 0;
+
 board.onChange((params) => {
     console.log(params);
 
     for (const [key, value] of Object.entries(params)) {
         if (controls[key]) {
+            if (
+                (controls[key] instanceof Digital ||
+                    controls[key] instanceof Toggle) &&
+                value
+            ) {
+                if (
+                    Math.random() < gimmick_chance &&
+                    Date.now() - last_gimmick > gimmick_cooldown
+                ) {
+                    last_gimmick = Date.now();
+                    obs.playMedia(gimmick_list[gimmick_index]);
+                    gimmick_index = (gimmick_index + 1) % gimmick_list.length;
+                    break;
+                }
+            }
             controls[key].input(value);
         }
     }
