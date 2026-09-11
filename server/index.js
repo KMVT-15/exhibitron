@@ -59,6 +59,7 @@ import {
     set_rgb_split,
     set_fish_eye,
     set_subpixel,
+    set_fg_mask,
 } from "./actions.js";
 import { choose, hsl_to_rgb, map } from "./util.js";
 
@@ -307,11 +308,86 @@ const controls = {
     B10: new Digital((v) => {
         set_big_glitch(obs, v);
     }),
-    B11: new Digital((v) => {}),
-    B12: new Digital((v) => {}),
-    B13: new Digital((v) => {}),
-    B14: new Digital((v) => {}),
-    B15: new Digital((v) => {}),
+    B11: new Toggle((v) => {
+        if (v) {
+            set_fg_mask(obs, "star");
+            controls.F12.reset();
+            controls.F13.reset();
+        } else {
+            set_fg_mask(obs, "blank");
+            controls.B11.value = false;
+            controls.B12.value = false;
+            controls.B13.value = false;
+            controls.B14.value = false;
+            controls.B15.value = false;
+        }
+    }),
+    B12: new Toggle((v) => {
+        if (v) {
+            set_fg_mask(obs, "heart");
+            controls.F12.reset();
+            controls.F13.reset();
+        } else {
+            set_fg_mask(obs, "blank");
+            controls.B11.value = false;
+            controls.B12.value = false;
+            controls.B13.value = false;
+            controls.B14.value = false;
+            controls.B15.value = false;
+        }
+    }),
+    B13: new Toggle((v) => {
+        if (v) {
+            var choice = choose([
+                "checker",
+                "elephant",
+                "flower",
+                "pacman",
+                "sailboat",
+                "submarine",
+                "tiger",
+                "tree",
+            ]);
+            set_fg_mask(obs, choice);
+            controls.F12.reset();
+            controls.F13.reset();
+        } else {
+            set_fg_mask(obs, "blank");
+            controls.B11.value = false;
+            controls.B12.value = false;
+            controls.B13.value = false;
+            controls.B14.value = false;
+            controls.B15.value = false;
+        }
+    }),
+    B14: new Toggle((v) => {
+        if (v) {
+            set_fg_mask(obs, "circle");
+            controls.F12.reset();
+            controls.F13.reset();
+        } else {
+            set_fg_mask(obs, "blank");
+            controls.B11.value = false;
+            controls.B12.value = false;
+            controls.B13.value = false;
+            controls.B14.value = false;
+            controls.B15.value = false;
+        }
+    }),
+    B15: new Toggle((v) => {
+        if (v) {
+            set_fg_mask(obs, "sqaure");
+            controls.F12.reset();
+            controls.F13.reset();
+        } else {
+            set_fg_mask(obs, "blank");
+            controls.B11.value = false;
+            controls.B12.value = false;
+            controls.B13.value = false;
+            controls.B14.value = false;
+            controls.B15.value = false;
+        }
+    }),
     B16: new Digital((v) => {
         if (v) set_random_encoder_group();
     }),
@@ -430,16 +506,10 @@ const controls = {
         if (v) set_foreground(obs, "Camera 4");
     }),
     B38: new Digital((v) => {
-        if (v) {
-            encoder_groups.red_sat.reset();
-            encoder_groups.green_sat.reset();
-        }
+        if (v) obs.playMedia("Dance");
     }),
     B39: new Digital((v) => {
-        if (v) {
-            encoder_groups.green_sat.reset();
-            encoder_groups.blue_sat.reset();
-        }
+        if (v) obs.playMedia("Wave");
     }),
     B40: new Digital((v) => {
         if (v) controls.P22.reset();

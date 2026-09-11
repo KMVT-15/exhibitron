@@ -178,6 +178,12 @@ export function set_pixelate(obs, value) {
     });
 }
 
+export function set_fg_mask(obs, path) {
+    obs.setFilterSettings("Foreground", "Image Mask", {
+        image_path: `${process.env.ASSET_PATH}/assets/masks/${path}.png`,
+    });
+}
+
 export function set_heat_wave(obs, value) {
     obs.setFilterSettings("Foreground", "Heat Wave", {
         Strength: vmap(value, 0, 25),

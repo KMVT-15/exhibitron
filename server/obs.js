@@ -282,4 +282,18 @@ export class OBS {
             },
         });
     }
+
+    playMedia(inputName) {
+        this.send({
+            op: 6,
+            d: {
+                requestType: "TriggerMediaInputAction",
+                requestId: "",
+                requestData: {
+                    inputName,
+                    mediaAction: "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART",
+                },
+            },
+        });
+    }
 }
