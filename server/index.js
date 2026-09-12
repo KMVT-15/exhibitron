@@ -517,10 +517,10 @@ const controls = {
         if (v) obs.playMedia("Wave");
     }),
     B40: new Digital((v) => {
-        if (v) controls.P22.reset();
+        if (v) obs.playMedia("Dance");
     }),
     B41: new Digital((v) => {
-        if (v) controls.P23.reset();
+        if (v) obs.playMedia("Wave");
     }),
     B42: new Digital((v) => {
         set_rotating_cube(obs, v);
